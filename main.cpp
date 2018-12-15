@@ -1,22 +1,14 @@
-#include <string>
 #include <iostream>
 
+#include "player.h"
+#include "board.h"
+
 using namespace std;
-
-class Player 
-{
-    public:
-    string name;
-
-    void printName()
-    {
-        cout << name << endl;
-    }
-};
 
 int main()
 {
     Player albert;
+    cout << albert.name << endl;
     albert.name = "Foo";
     albert.printName();
     system("pause");
