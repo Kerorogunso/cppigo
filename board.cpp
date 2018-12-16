@@ -9,6 +9,11 @@ void Goban::placeStone(vector<int> position)
     vector<int> a;
 }
 
+int Goban::getBoardSize()
+{
+    return 13;
+}
+
 int Group::getLiberties()
 {
     return liberties;
