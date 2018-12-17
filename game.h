@@ -7,6 +7,7 @@ class GoGame
         Goban board;
         Player black;
         Player white;
+		Player currentPlayer;
 
 		GoGame();
 		GoGame(Goban board, Player black, Player white);
