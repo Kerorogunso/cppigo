@@ -8,6 +8,6 @@ class GoGame
         Player black;
         Player white;
 
-    GoGame();
-    GoGame(Goban board, Player black, Player white);
+		GoGame();
+		GoGame(Goban board, Player black, Player white);
 };

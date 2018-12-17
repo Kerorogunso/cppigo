@@ -8,9 +8,16 @@ class Goban
     public:
         int boardSize;
         vector<int> board;
-    
-    void placeStone(vector<int> positon);
-    int getBoardSize();
+
+		Goban();
+		Goban(int boardSize);
+
+		void placeStone(vector<int> positon);
+		int getBoardSize();
+		void operator=(const Goban& goban);
+	
+	private:
+		const vector<int> validBoardSizes = { 9, 13, 19 };
 };
 
 class Group

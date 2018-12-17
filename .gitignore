@@ -1,2 +1,7 @@
-.vscode/
+Debug
+x64
+packages
 *.exe
+unittests/x64/*
+*.vs/
+*.vscode/
