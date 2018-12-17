@@ -8,13 +8,7 @@ using namespace std;
 
 int main()
 {
-	Player albert("Albert");
-	Player rohit("Rohit");
-
 	Goban board;
-	GoGame myGame(board, albert, rohit);
-	myGame.white.printName();
-	cout << myGame.black.name << endl;
-	cout << myGame.currentPlayer.name << endl;
+	board.placeStone(BLACK, 18, 18);
 	system("pause");
 }

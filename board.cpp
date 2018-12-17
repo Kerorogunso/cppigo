@@ -1,15 +1,15 @@
-#include <vector>
 #include <map>
 #include <stdexcept>
 
 #include "board.h"
 
 using namespace std;
+using namespace boost::numeric::ublas;
 
 Goban::Goban()
 {
 	boardSize = 19;
-	board = {};
+	board = matrix<int>(boardSize, boardSize);
 }
 
 Goban::Goban(int boardSize)
@@ -21,9 +21,14 @@ Goban::Goban(int boardSize)
 	this->boardSize = boardSize;
 }
 
-void Goban::placeStone(vector<int> position)
-{
-    vector<int> a;
+void Goban::placeStone(int stone, int row, int column)
+{	
+	if (!isInvalidStone(stone))
+	{
+		throw std::invalid_argument("Stone is not valid.");
+	}
+	
+	board (row, column) = stone;
 }
 
 int Goban::getBoardSize()
@@ -49,4 +54,9 @@ bool Group::isCaptured()
         return true;
     }
     return false;
+}
+
+bool isInvalidStone(int stone)
+{
+	return stone != BLACK && stone != WHITE && stone == EMPTY;
 }

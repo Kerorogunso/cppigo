@@ -97,6 +97,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Program Files\boost\boost_1_67_0\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="board.cpp" />
     <ClCompile Include="game.cpp" />
