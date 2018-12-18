@@ -20,9 +20,11 @@ class Goban
 		Goban();
 		Goban(int boardSize);
 
-		void placeStone(int stone, int row, int column);
-		int getBoardSize();
 		void operator=(const Goban& goban);
+
+		void placeStone(int stone, int row, int column);
+		void placeStone(int stone, std::tuple<int, int> index);
+		int getBoardSize();
 		std::vector<std::tuple<int, int>> getGroup(int row, int column);
 	
 	private:

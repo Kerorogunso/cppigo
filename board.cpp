@@ -32,6 +32,13 @@ void Goban::placeStone(int stone, int row, int column)
 	board (row, column) = stone;
 }
 
+void Goban::placeStone(int stone, std::tuple<int, int> index)
+{
+	int row = std::get<0>(index);
+	int column = std::get<1>(index);
+	Goban::placeStone(stone, row, column);
+}
+
 int Goban::getBoardSize()
 {
     return boardSize;
