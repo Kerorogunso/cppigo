@@ -1,5 +1,6 @@
 #include <map>
 #include <stdexcept>
+#include <queue>
 
 #include "board.h"
 
@@ -9,7 +10,7 @@ using namespace boost::numeric::ublas;
 Goban::Goban()
 {
 	boardSize = 19;
-	board = matrix<int>(boardSize, boardSize);
+	board = matrix<int>(boardSize, boardSize, 0);
 }
 
 Goban::Goban(int boardSize)
@@ -23,7 +24,7 @@ Goban::Goban(int boardSize)
 
 void Goban::placeStone(int stone, int row, int column)
 {	
-	if (!isInvalidStone(stone))
+	if (isInvalidStone(stone))
 	{
 		throw std::invalid_argument("Stone is not valid.");
 	}
@@ -40,6 +41,48 @@ void Goban::operator=(const Goban & goban)
 {
 	boardSize = goban.boardSize;
 	board = goban.board;
+}
+
+std::vector<std::tuple<int, int>> Goban::getGroup(int row, int column)
+{
+	std::queue<std::tuple<int, int>> neighborQueue;
+	std::vector<std::tuple<int, int>> stoneGroup;
+	getAdjacentNeighborsAndPush(row, column, neighborQueue, stoneGroup);
+
+	while (!neighborQueue.empty())
+	{	
+		std::tuple<int, int> neighbor = neighborQueue.front();
+		stoneGroup.push_back(neighbor);
+
+		int neighborRow = std::get<0>(neighbor);
+		int neighborColumn = std::get<1>(neighbor);
+
+		getAdjacentNeighborsAndPush(neighborRow, neighborColumn, neighborQueue, stoneGroup);
+		neighborQueue.pop();
+	}
+	return stoneGroup;
+}
+
+void getAdjacentNeighborsAndPush(int row, int column, std::queue<std::tuple<int, int>>& queue, std::vector<std::tuple<int, int>> group)
+{
+	std::vector<std::tuple<int, int>> adjacentNeighbors = getNeighbors(row, column);
+	for (auto it = adjacentNeighbors.begin(); it != adjacentNeighbors.end(); ++it)
+	{
+		if (notInGroup(group, *it))
+		{
+			queue.push(*it);
+		}
+	}
+}
+
+bool notInGroup(std::vector<std::tuple<int, int>>& groupElements, std::tuple<int, int> stoneIndex)
+{
+	const auto position = std::find(groupElements.begin(), groupElements.end(), stoneIndex);
+	if (position == groupElements.end())
+	{
+		return true;
+	}
+	return false;
 }
 
 int Group::getLiberties()
@@ -59,4 +102,28 @@ bool Group::isCaptured()
 bool isInvalidStone(int stone)
 {
 	return stone != BLACK && stone != WHITE && stone == EMPTY;
+}
+
+std::vector<std::tuple<int, int>> getNeighbors(int row, int column)
+{
+	std::vector<std::tuple<int, int>> neighbors = {
+		std::make_tuple(row - 1, column - 1),
+		std::make_tuple(row + 1, column - 1),
+		std::make_tuple(row - 1, column + 1),
+		std::make_tuple(row + 1, column + 1),
+	};
+
+	std::vector<std::tuple<int, int>> validNeighbors = {};
+	
+	for (auto it = neighbors.begin(); it != neighbors.end(); ++it)
+	{
+		int neighborRow = std::get<0>(*it);
+		int neighborColumn = std::get<1>(*it);
+		
+		if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < 6 && neighborColumn < 6)
+		{
+			validNeighbors.push_back(*it);
+		}
+	}
+	return validNeighbors;
 }
