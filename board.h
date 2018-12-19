@@ -19,6 +19,7 @@ class Goban
 
 		Goban();
 		Goban(int boardSize);
+		Goban(Goban& goban);
 
 		void operator=(const Goban& goban);
 
@@ -26,9 +27,13 @@ class Goban
 		void placeStone(int stone, std::tuple<int, int> index);
 		int getBoardSize();
 		std::vector<std::tuple<int, int>> getGroup(int row, int column);
+		void getAdjacentNeighborsAndPush(int row, int column, std::queue<std::tuple<int, int>>& queue, std::vector<std::tuple<int, int>> group);
+		std::vector<std::tuple<int, int>> getNeighbors(int row, int column);
+		void displayBoard();
 	
 	private:
 		const std::vector<int> validBoardSizes = { 9, 13, 19 };
+		bool rangeCheck(int row, int column);
 };
 
 class Group
@@ -42,6 +47,5 @@ class Group
 };
 
 bool isInvalidStone(int stone);
-void getAdjacentNeighborsAndPush(int row, int column, std::queue<std::tuple<int, int>>& queue, std::vector<std::tuple<int, int>> group);
 bool notInGroup(std::vector<std::tuple<int, int>>& groupElements, std::tuple<int, int> stoneIndex);
 std::vector<std::tuple<int, int>> getNeighbors(int row, int column);

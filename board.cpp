@@ -1,6 +1,7 @@
 #include <map>
 #include <stdexcept>
 #include <queue>
+#include <iostream>
 
 #include "board.h"
 
@@ -20,6 +21,13 @@ Goban::Goban(int boardSize)
 		throw invalid_argument("Board size must be 9, 13 or 19.");
 	}
 	this->boardSize = boardSize;
+	board = matrix<int>(boardSize, boardSize, 0);
+}
+
+Goban::Goban(Goban& goban)
+{
+	board = goban.board;
+	boardSize = goban.getBoardSize();
 }
 
 void Goban::placeStone(int stone, int row, int column)
@@ -70,7 +78,7 @@ std::vector<std::tuple<int, int>> Goban::getGroup(int row, int column)
 	return stoneGroup;
 }
 
-void getAdjacentNeighborsAndPush(int row, int column, std::queue<std::tuple<int, int>>& queue, std::vector<std::tuple<int, int>> group)
+void Goban::getAdjacentNeighborsAndPush(int row, int column, std::queue<std::tuple<int, int>>& queue, std::vector<std::tuple<int, int>> group)
 {
 	std::vector<std::tuple<int, int>> adjacentNeighbors = getNeighbors(row, column);
 	for (auto it = adjacentNeighbors.begin(); it != adjacentNeighbors.end(); ++it)
@@ -111,7 +119,7 @@ bool isInvalidStone(int stone)
 	return stone != BLACK && stone != WHITE && stone == EMPTY;
 }
 
-std::vector<std::tuple<int, int>> getNeighbors(int row, int column)
+std::vector<std::tuple<int, int>> Goban::getNeighbors(int row, int column)
 {
 	std::vector<std::tuple<int, int>> neighbors = {
 		std::make_tuple(row - 1, column - 1),
@@ -121,16 +129,42 @@ std::vector<std::tuple<int, int>> getNeighbors(int row, int column)
 	};
 
 	std::vector<std::tuple<int, int>> validNeighbors = {};
-	
+		
+	int boardSize = getBoardSize();
+
 	for (auto it = neighbors.begin(); it != neighbors.end(); ++it)
 	{
 		int neighborRow = std::get<0>(*it);
 		int neighborColumn = std::get<1>(*it);
 		
-		if (neighborRow >= 0 && neighborColumn >= 0 && neighborRow < 6 && neighborColumn < 6)
+		if (rangeCheck(neighborRow, neighborColumn) && (board(row, column) == board(neighborRow, neighborColumn)))
 		{
 			validNeighbors.push_back(*it);
 		}
 	}
 	return validNeighbors;
+}
+
+bool Goban::rangeCheck(int row, int column)
+{
+	bool withinRow = (row >= 0 && row < getBoardSize() - 1);
+	bool withinColumn = (column >= 0 && row < getBoardSize() - 1);
+
+	if (withinRow && withinColumn)
+	{
+		return true;
+	}
+	return false;
+}
+
+void Goban::displayBoard()
+{
+	for (int i = 0; i < board.size1(); ++i)
+	{
+		for (int j = 0; j < board.size2(); ++j)
+		{
+			std::cout << board(i, j);
+		}
+		std::cout << std::endl;
+	}
 }
