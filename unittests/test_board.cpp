@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <random>
 
 #include "../board.cpp"
 TEST(Board, BoardSize)
@@ -14,5 +15,50 @@ TEST(Board, BoardSize)
 	EXPECT_EQ(boardSize9x9, 9);
 	EXPECT_EQ(boardSize13x13, 13);
 	EXPECT_EQ(boardSize19x19, 19);
+
+}
+
+TEST(Board, PlaceStone)
+{
+	Goban testGoban(9);
+	testGoban.placeStone(BLACK, { 5, 4 });
+	EXPECT_EQ(testGoban.board(5,4), BLACK);
+
+	testGoban.placeStone(WHITE, 5, 4);
+	EXPECT_EQ(testGoban.board(5,4), WHITE);
+
+	EXPECT_THROW(testGoban.placeStone(WHITE, { 10, 5 }), std::invalid_argument);
+	EXPECT_THROW(testGoban.placeStone(BLACK, 5, 10), std::invalid_argument);
+
+}
+
+TEST(Board, BoardAssignment)
+{
+	Goban oldBoard(9);
+	Goban newBoard(13);
+	
+	newBoard.placeStone(BLACK, 11, 4);
+	
+	int randomStone;
+	for (int i = 0; i < 13; ++i)
+	{
+		for (int j = 0; j < 13; ++j)
+		{
+			randomStone = rand() % 2 + 1;
+			newBoard.placeStone(randomStone, i, j);
+		}
+	}
+	oldBoard = newBoard;
+
+	EXPECT_EQ(oldBoard.getBoardSize(), 13);
+
+
+	for (int i = 0; i < 13; ++i)
+	{
+		for (int j = 0; j < 13; ++j)
+		{
+			EXPECT_EQ(oldBoard.board(i, j), newBoard.board(i, j));
+		}
+	}
 
 }

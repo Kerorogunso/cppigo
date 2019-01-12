@@ -33,7 +33,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Albert\Documents\GitHub\cppigo;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\boost\boost_1_69_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
