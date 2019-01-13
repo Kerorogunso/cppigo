@@ -33,7 +33,7 @@ class Goban
 	
 	private:
 		const std::vector<int> validBoardSizes = { 9, 13, 19 };
-		bool rangeCheck(int row, int column);
+		bool isNotInRange(int row, int column);
 };
 
 class Group

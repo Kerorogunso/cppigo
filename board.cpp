@@ -36,6 +36,11 @@ void Goban::placeStone(int stone, int row, int column)
 	{
 		throw std::invalid_argument("Stone is not valid.");
 	}
+
+	if (isNotInRange(row, column))
+	{
+		throw std::logic_error("Stone coordinates is not in range.");
+	}
 	
 	board (row, column) = stone;
 }
@@ -137,7 +142,7 @@ std::vector<std::tuple<int, int>> Goban::getNeighbors(int row, int column)
 		int neighborRow = std::get<0>(*it);
 		int neighborColumn = std::get<1>(*it);
 		
-		if (rangeCheck(neighborRow, neighborColumn) && (board(row, column) == board(neighborRow, neighborColumn)))
+		if (isNotInRange(neighborRow, neighborColumn) && (board(row, column) == board(neighborRow, neighborColumn)))
 		{
 			validNeighbors.push_back(*it);
 		}
@@ -145,16 +150,16 @@ std::vector<std::tuple<int, int>> Goban::getNeighbors(int row, int column)
 	return validNeighbors;
 }
 
-bool Goban::rangeCheck(int row, int column)
+bool Goban::isNotInRange(int row, int column)
 {
-	bool withinRow = (row >= 0 && row < getBoardSize() - 1);
-	bool withinColumn = (column >= 0 && row < getBoardSize() - 1);
+	bool withinRow = (row >= 0 && row < getBoardSize());
+	bool withinColumn = (column >= 0 && row < getBoardSize());
 
 	if (withinRow && withinColumn)
 	{
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 
 void Goban::displayBoard()

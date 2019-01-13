@@ -26,9 +26,9 @@ TEST(Board, PlaceStone)
 
 	testGoban.placeStone(WHITE, 5, 4);
 	EXPECT_EQ(testGoban.board(5,4), WHITE);
-
-	EXPECT_THROW(testGoban.placeStone(WHITE, { 10, 5 }), std::invalid_argument);
-	EXPECT_THROW(testGoban.placeStone(BLACK, 5, 10), std::invalid_argument);
+	
+	EXPECT_THROW(testGoban.placeStone(WHITE, { 10, 5 }), std::logic_error);
+	EXPECT_THROW(testGoban.placeStone(BLACK, 5, 10), std::logic_error);
 
 }
 
