@@ -3,12 +3,16 @@
 
 class GoGame
 {
-    public:
-        Goban board;
-        Player black;
-        Player white;
-		Player currentPlayer;
+public:
+	Goban board;
+	Player black;
+	Player white;
+	Player currentPlayer;
 
-		GoGame();
-		GoGame(Goban board, Player black, Player white);
+	GoGame();
+	GoGame(Goban board, Player black, Player white);
+
+	void play(int row, int col);
+private:
+	void switchActivePlayer();
 };

@@ -34,21 +34,26 @@ void Goban::placeStone(int stone, int row, int column)
 {	
 	if (isInvalidStone(stone))
 	{
-		throw std::invalid_argument("Stone is not valid.");
+		throw invalid_argument("Stone is not valid.");
 	}
 
 	if (isNotInRange(row, column))
 	{
-		throw std::logic_error("Stone coordinates is not in range.");
+		throw logic_error("Stone coordinates is not in range.");
+	}
+
+	if (board(row, column) != EMPTY)
+	{
+		throw logic_error("There is a stone already there.");
 	}
 	
 	board (row, column) = stone;
 }
 
-void Goban::placeStone(int stone, std::tuple<int, int> index)
+void Goban::placeStone(int stone, tuple<int, int> index)
 {
-	int row = std::get<0>(index);
-	int column = std::get<1>(index);
+	int row = get<0>(index);
+	int column = get<1>(index);
 	Goban::placeStone(stone, row, column);
 }
 
@@ -63,41 +68,29 @@ void Goban::operator=(const Goban & goban)
 	board = goban.board;
 }
 
-std::vector<std::tuple<int, int>> Goban::getGroup(int row, int column)
+std::vector<tuple<int, int>> Goban::getGroup(int row, int column)
 {
-	std::queue<std::tuple<int, int>> neighborQueue;
-	std::vector<std::tuple<int, int>> stoneGroup;
-	getAdjacentNeighborsAndPush(row, column, neighborQueue, stoneGroup);
+	queue<tuple<int, int>> neighborQueue;
+	std::vector<tuple<int, int>> stoneGroup;
+	//getAdjacentNeighborsAndPush(row, column, neighborQueue, stoneGroup);
 
 	while (!neighborQueue.empty())
 	{	
-		std::tuple<int, int> neighbor = neighborQueue.front();
+		tuple<int, int> neighbor = neighborQueue.front();
 		stoneGroup.push_back(neighbor);
 
-		int neighborRow = std::get<0>(neighbor);
-		int neighborColumn = std::get<1>(neighbor);
+		int neighborRow = get<0>(neighbor);
+		int neighborColumn = get<1>(neighbor);
 
-		getAdjacentNeighborsAndPush(neighborRow, neighborColumn, neighborQueue, stoneGroup);
+		//getAdjacentNeighborsAndPush(neighborRow, neighborColumn, neighborQueue, stoneGroup);
 		neighborQueue.pop();
 	}
 	return stoneGroup;
 }
 
-void Goban::getAdjacentNeighborsAndPush(int row, int column, std::queue<std::tuple<int, int>>& queue, std::vector<std::tuple<int, int>> group)
+bool notInGroup(std::vector<tuple<int, int>>& groupElements, tuple<int, int> stoneIndex)
 {
-	std::vector<std::tuple<int, int>> adjacentNeighbors = getNeighbors(row, column);
-	for (auto it = adjacentNeighbors.begin(); it != adjacentNeighbors.end(); ++it)
-	{
-		if (notInGroup(group, *it))
-		{
-			queue.push(*it);
-		}
-	}
-}
-
-bool notInGroup(std::vector<std::tuple<int, int>>& groupElements, std::tuple<int, int> stoneIndex)
-{
-	const auto position = std::find(groupElements.begin(), groupElements.end(), stoneIndex);
+	const auto position = find(groupElements.begin(), groupElements.end(), stoneIndex);
 	if (position == groupElements.end())
 	{
 		return true;
@@ -124,32 +117,6 @@ bool isInvalidStone(int stone)
 	return stone != BLACK && stone != WHITE && stone == EMPTY;
 }
 
-std::vector<std::tuple<int, int>> Goban::getNeighbors(int row, int column)
-{
-	std::vector<std::tuple<int, int>> neighbors = {
-		std::make_tuple(row - 1, column - 1),
-		std::make_tuple(row + 1, column - 1),
-		std::make_tuple(row - 1, column + 1),
-		std::make_tuple(row + 1, column + 1),
-	};
-
-	std::vector<std::tuple<int, int>> validNeighbors = {};
-		
-	int boardSize = getBoardSize();
-
-	for (auto it = neighbors.begin(); it != neighbors.end(); ++it)
-	{
-		int neighborRow = std::get<0>(*it);
-		int neighborColumn = std::get<1>(*it);
-		
-		if (isNotInRange(neighborRow, neighborColumn) && (board(row, column) == board(neighborRow, neighborColumn)))
-		{
-			validNeighbors.push_back(*it);
-		}
-	}
-	return validNeighbors;
-}
-
 bool Goban::isNotInRange(int row, int column)
 {
 	bool withinRow = (row >= 0 && row < getBoardSize());
@@ -162,14 +129,53 @@ bool Goban::isNotInRange(int row, int column)
 	return true;
 }
 
+std::vector<tuple<int, int>> Goban::returnNeighbors(int row, int col)
+{
+	std::vector<tuple<int, int>> neighbors = {};
+	getNeighbors(&neighbors, row, col);
+
+	return neighbors;
+}
+
 void Goban::displayBoard()
 {
 	for (int i = 0; i < board.size1(); ++i)
 	{
 		for (int j = 0; j < board.size2(); ++j)
 		{
-			std::cout << board(i, j);
+			cout << board(i, j);
 		}
-		std::cout << std::endl;
+		cout << endl;
+	}
+}
+
+void Goban::getNeighbors(std::vector<tuple<int, int>> *neighbors, int row, int col)
+{	
+	
+	std::vector<tuple<int, int>> potentialNeighbors = {
+		make_tuple(row, col + 1),
+		make_tuple(row, col - 1),
+		make_tuple(row + 1, col),
+		make_tuple(row - 1, col)
+	 };
+	
+	for (auto it = potentialNeighbors.begin(); it != potentialNeighbors.end(); ++it)
+	{	
+		int neighborRow = get<0>(*it);
+		int neighborCol = get<1>(*it);
+
+		if (isNotInRange(neighborRow, neighborCol))
+		{
+			continue;
+		}
+		
+		if (this->board(neighborRow, neighborCol) == this->board(row, col))
+		{
+			if (find(neighbors->begin(), neighbors->end(), *it) == neighbors->end())
+			{
+				neighbors->push_back(*it);
+				getNeighbors(neighbors, neighborRow, neighborCol);
+			}
+		}
 	}
 }

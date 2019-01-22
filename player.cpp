@@ -48,3 +48,11 @@ float Player::getKomi()
     // Should not get here.
     throw std::invalid_argument("Player color not identifiable.");
 }
+bool Player::operator==(const Player& otherPlayer)
+{
+	if (this->name != otherPlayer.name || this->color != otherPlayer.color)
+	{
+		return false;
+	}
+	return true;
+}

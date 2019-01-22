@@ -16,4 +16,5 @@ class Player
 
         void printName();
         float getKomi();
+		bool operator==(const Player& otherPlayer);
 };
