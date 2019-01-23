@@ -39,3 +39,16 @@ void GoGame::switchActivePlayer()
 		this->currentPlayer = this->black;
 	}
 }
+
+void GoGame::checkForCapturedStones(int row, int col)
+{
+	Group stoneGroup = this->board->getNeighbors(row, col);
+
+	if (this->board->getLiberties(stoneGroup) == 0)
+	{
+		for (auto it = stoneGroup.begin(); it != stoneGroup.end(); ++it)
+		{
+			this->board.placeStone(EMPTY, *it);
+		}
+	}
+}

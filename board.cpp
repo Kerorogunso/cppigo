@@ -68,27 +68,7 @@ void Goban::operator=(const Goban & goban)
 	board = goban.board;
 }
 
-std::vector<tuple<int, int>> Goban::getGroup(int row, int column)
-{
-	queue<tuple<int, int>> neighborQueue;
-	std::vector<tuple<int, int>> stoneGroup;
-	//getAdjacentNeighborsAndPush(row, column, neighborQueue, stoneGroup);
-
-	while (!neighborQueue.empty())
-	{	
-		tuple<int, int> neighbor = neighborQueue.front();
-		stoneGroup.push_back(neighbor);
-
-		int neighborRow = get<0>(neighbor);
-		int neighborColumn = get<1>(neighbor);
-
-		//getAdjacentNeighborsAndPush(neighborRow, neighborColumn, neighborQueue, stoneGroup);
-		neighborQueue.pop();
-	}
-	return stoneGroup;
-}
-
-bool notInGroup(std::vector<tuple<int, int>>& groupElements, tuple<int, int> stoneIndex)
+bool notInGroup(Group &groupElements, tuple<int, int> stoneIndex)
 {
 	const auto position = find(groupElements.begin(), groupElements.end(), stoneIndex);
 	if (position == groupElements.end())
@@ -96,20 +76,6 @@ bool notInGroup(std::vector<tuple<int, int>>& groupElements, tuple<int, int> sto
 		return true;
 	}
 	return false;
-}
-
-int Group::getLiberties()
-{
-    return liberties;
-}
-
-bool Group::isCaptured()
-{
-    if (liberties == 0)
-    {
-        return true;
-    }
-    return false;
 }
 
 bool isInvalidStone(int stone)
@@ -129,9 +95,9 @@ bool Goban::isNotInRange(int row, int column)
 	return true;
 }
 
-std::vector<tuple<int, int>> Goban::returnNeighbors(int row, int col)
+Group Goban::returnNeighbors(int row, int col)
 {
-	std::vector<tuple<int, int>> neighbors = {};
+	Group neighbors = {};
 	getNeighbors(&neighbors, row, col);
 
 	return neighbors;
@@ -149,10 +115,46 @@ void Goban::displayBoard()
 	}
 }
 
-void Goban::getNeighbors(std::vector<tuple<int, int>> *neighbors, int row, int col)
+int Goban::getLiberties(Group neighbors)
+{
+	
+	int numLiberties = 0;
+	Group libertyCoords = {};
+	
+	for (auto it = neighbors.begin(); it != neighbors.end(); ++it)
+	{
+		int neighborRow = get<0>(*it);
+		int neighborColumn = get<0>(*it);
+
+		Group adjacentSquares = {
+			make_pair(neighborRow + 1, neighborColumn),
+			make_pair(neighborRow - 1, neighborColumn),
+			make_pair(neighborRow, neighborColumn + 1),
+			make_pair(neighborRow, neighborColumn - 1)
+		};
+
+		for (auto idx = adjacentSquares.begin(); idx != adjacentSquares.end(); ++idx)
+		{
+			if (this->isEmpty(get<0>(*idx), get<1>(*idx)) && find(libertyCoords.begin(), libertyCoords.end(), (*idx)) == libertyCoords.end())
+			{
+				numLiberties++;
+				neighbors.push_back(*idx);
+			}
+
+		}
+	}
+	return numLiberties;
+}
+
+bool Goban::isEmpty(int row, int col)
+{
+	return this->board(row, col) == EMPTY;
+}
+
+void Goban::getNeighbors(Group *neighbors, int row, int col)
 {	
 	
-	std::vector<tuple<int, int>> potentialNeighbors = {
+	Group potentialNeighbors = {
 		make_tuple(row, col + 1),
 		make_tuple(row, col - 1),
 		make_tuple(row + 1, col),

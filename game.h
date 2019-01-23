@@ -15,4 +15,5 @@ public:
 	void play(int row, int col);
 private:
 	void switchActivePlayer();
+	void checkForCapturedStones(int row, int col);
 };
