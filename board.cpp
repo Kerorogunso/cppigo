@@ -121,10 +121,10 @@ int Goban::getLiberties(Group neighbors)
 	int numLiberties = 0;
 	Group libertyCoords = {};
 	
-	for (auto it = neighbors.begin(); it != neighbors.end(); ++it)
+	for (auto coordinates : neighbors)
 	{
-		int neighborRow = get<0>(*it);
-		int neighborColumn = get<0>(*it);
+		int neighborRow = get<0>(coordinates);
+		int neighborColumn = get<1>(coordinates);
 
 		Group adjacentSquares = {
 			make_pair(neighborRow + 1, neighborColumn),
@@ -133,12 +133,12 @@ int Goban::getLiberties(Group neighbors)
 			make_pair(neighborRow, neighborColumn - 1)
 		};
 
-		for (auto idx = adjacentSquares.begin(); idx != adjacentSquares.end(); ++idx)
+		for (auto adjacent: adjacentSquares)
 		{
-			if (this->isEmpty(get<0>(*idx), get<1>(*idx)) && find(libertyCoords.begin(), libertyCoords.end(), (*idx)) == libertyCoords.end())
+			if (this->isEmpty(get<0>(adjacent), get<1>(adjacent)) && find(libertyCoords.begin(), libertyCoords.end(), (adjacent)) == libertyCoords.end())
 			{
 				numLiberties++;
-				neighbors.push_back(*idx);
+				neighbors.push_back(adjacent);
 			}
 
 		}
@@ -161,10 +161,10 @@ void Goban::getNeighbors(Group *neighbors, int row, int col)
 		make_tuple(row - 1, col)
 	 };
 	
-	for (auto it = potentialNeighbors.begin(); it != potentialNeighbors.end(); ++it)
+	for (auto neighbor : potentialNeighbors)
 	{	
-		int neighborRow = get<0>(*it);
-		int neighborCol = get<1>(*it);
+		int neighborRow = get<0>(neighbor);
+		int neighborCol = get<1>(neighbor);
 
 		if (isNotInRange(neighborRow, neighborCol))
 		{
@@ -173,9 +173,9 @@ void Goban::getNeighbors(Group *neighbors, int row, int col)
 		
 		if (this->board(neighborRow, neighborCol) == this->board(row, col))
 		{
-			if (find(neighbors->begin(), neighbors->end(), *it) == neighbors->end())
+			if (find(neighbors->begin(), neighbors->end(), neighbor) == neighbors->end())
 			{
-				neighbors->push_back(*it);
+				neighbors->push_back(neighbor);
 				getNeighbors(neighbors, neighborRow, neighborCol);
 			}
 		}
