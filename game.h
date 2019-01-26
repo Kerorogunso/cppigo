@@ -4,7 +4,7 @@
 class GoGame
 {
 public:
-	Goban board;
+	Goban goban;
 	Player black;
 	Player white;
 	Player currentPlayer;
@@ -13,6 +13,7 @@ public:
 	GoGame(Goban board, Player black, Player white);
 
 	void play(int row, int col);
+	
 private:
 	void switchActivePlayer();
 	void checkForCapturedStones(int row, int col);

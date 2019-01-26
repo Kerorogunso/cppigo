@@ -7,18 +7,24 @@ GoGame::GoGame()
 	this->currentPlayer = black;
 };
 
-GoGame::GoGame(Goban goban, Player player1, Player player2)
+GoGame::GoGame(Goban board, Player player1, Player player2)
 {
-    board = goban;
+    goban = board;
     black = player1;
     white = player2;
 	currentPlayer = player1;
 }
 void GoGame::play(int row, int col)
 {
+	int stone = BLACK;
+	if (this->currentPlayer == this->white)
+	{
+		int stone = WHITE;
+	}
+
 	try
 	{
-		this->board->placeStone(row, col);
+		goban.placeStone(stone, row, col);
 	}
 	catch(logic_error)
 	{
@@ -42,13 +48,23 @@ void GoGame::switchActivePlayer()
 
 void GoGame::checkForCapturedStones(int row, int col)
 {
-	Group stoneGroup = this->board->getNeighbors(row, col);
-
-	if (this->board->getLiberties(stoneGroup) == 0)
+	Group stoneGroup = this->goban.returnNeighbors(row, col);
+	Player currentPlayer = this->currentPlayer;
+	
+	int color = BLACK;
+	if (currentPlayer.color == "black")
 	{
-		for (auto it = stoneGroup.begin(); it != stoneGroup.end(); ++it)
+		color = WHITE;
+	}
+	
+	if (this->goban.getLiberties(stoneGroup) == 0)
+	{
+		for (auto coordinates : stoneGroup)
 		{
-			this->board.placeStone(EMPTY, *it);
+			if (this->goban.board(get<0>(coordinates), get<1>(coordinates)) != color) 
+			{
+				this->goban.placeStone(EMPTY, coordinates);
+			}
 		}
 	}
 }

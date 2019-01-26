@@ -39,3 +39,5 @@ class Goban
 		const std::vector<int> validBoardSizes = { 9, 13, 19 };
 		bool isNotInRange(int row, int column);
 };
+
+bool isInvalidStone(int stone);
