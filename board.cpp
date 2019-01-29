@@ -8,6 +8,7 @@
 using namespace std;
 using namespace boost::numeric::ublas;
 
+
 Goban::Goban()
 {
 	boardSize = 19;
@@ -105,11 +106,63 @@ Group Goban::returnNeighbors(int row, int col)
 
 void Goban::displayBoard()
 {
+	const string BLACK_UNICODE = "\u25CF";
+	const string WHITE_UNICODE = "\u25CB";
+
+	const string BOX_TOP_LEFT = "\u250E";
+	const string BOX_TOP_RIGHT = "\u2516";
+	const string BOX_TOP = "\u2530";
+	const string BOX_LEFT = "\u2520";
+	const string BOX_RIGHT = "\u252B";
+	const string BOX_BOTTOM_LEFT = "\u2516";
+	const string BOX_BOTTOM_RIGHT = "\u251B";
+	const string BOX_BOTTOM = "\u253A";
+	const string BOX_CENTRE = "\u254B";
+
 	for (int i = 0; i < board.size1(); ++i)
 	{
 		for (int j = 0; j < board.size2(); ++j)
 		{
-			cout << board(i, j);
+			if (board(i, j) == BLACK)
+			{
+				cout << BLACK_UNICODE;
+			}
+			else if (board(i, j) == WHITE)
+			{
+				cout << WHITE_UNICODE;
+			}
+			else
+			{
+				if (i == 0)
+				{
+					if (j == 0)
+						cout << BOX_TOP_LEFT;
+					else if (j == board.size2 - 1)
+						cout << BOX_TOP_RIGHT;
+					else
+						cout << BOX_TOP;
+				}
+
+				else if (j == 0)
+				{
+					if (i == board.size1 - 1)
+						cout << BOX_BOTTOM_LEFT;
+					else
+						cout << BOX_LEFT;
+				}
+
+				else if (i == board.size1 - 1)
+				{
+					if (j == board.size2 - 1)
+						cout << BOX_BOTTOM_RIGHT;
+					else
+						cout << BOX_BOTTOM;
+				}
+				else if (j == board.size2 - 1)
+					cout << BOX_RIGHT;
+				else
+					cout << BOX_CENTRE;
+			}
 		}
 		cout << endl;
 	}
@@ -134,11 +187,19 @@ int Goban::getLiberties(Group neighbors)
 		};
 
 		for (auto adjacent: adjacentSquares)
-		{
-			if (this->isEmpty(get<0>(adjacent), get<1>(adjacent)) && find(libertyCoords.begin(), libertyCoords.end(), (adjacent)) == libertyCoords.end())
+		{	
+			int row = get<0>(adjacent);
+			int col = get<1>(adjacent);
+
+			if (this->isNotInRange(row, col))
+			{
+				continue;
+			}
+
+			if (this->isEmpty(adjacent) && find(libertyCoords.begin(), libertyCoords.end(), adjacent) == libertyCoords.end())
 			{
 				numLiberties++;
-				neighbors.push_back(adjacent);
+				libertyCoords.push_back(adjacent);
 			}
 
 		}
@@ -146,8 +207,10 @@ int Goban::getLiberties(Group neighbors)
 	return numLiberties;
 }
 
-bool Goban::isEmpty(int row, int col)
+bool Goban::isEmpty(tuple<int, int> coordinates)
 {
+	int row = get<0>(coordinates);
+	int col = get<1>(coordinates);
 	return this->board(row, col) == EMPTY;
 }
 

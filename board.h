@@ -33,7 +33,7 @@ class Goban
 		Group returnNeighbors(int row, int col);
 		void displayBoard();
 		int getLiberties(Group neighbors);
-		bool isEmpty(int row, int col);
+		bool isEmpty(tuple<int, int> coordinates);
 	
 	private:
 		const std::vector<int> validBoardSizes = { 9, 13, 19 };

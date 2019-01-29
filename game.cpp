@@ -34,6 +34,22 @@ void GoGame::play(int row, int col)
 
 }
 
+void GoGame::startGame()
+{
+	string move;
+	do
+	{
+		cout << "What's your move: ";
+		cin >> move;
+		tuple<int, int> parsedMove = parseMove(move);
+		cout << get<0>(parsedMove) << "," << get<1>(parsedMove);
+		this->play(get<0>(parsedMove), get<1>(parsedMove));
+		cout << endl;
+		//this->goban.displayBoard();
+	} while (move != "quit");
+
+}
+
 void GoGame::switchActivePlayer()
 {
 	if (this->currentPlayer == this->black)
@@ -67,4 +83,20 @@ void GoGame::checkForCapturedStones(int row, int col)
 			}
 		}
 	}
+}
+
+tuple<int, int> parseMove(string move)
+{
+	stringstream stream(move);
+	std::vector<int> coordinates;
+	int n;
+	while (stream >> n)
+	{
+		coordinates.push_back(n);
+	}
+
+	for (auto it : coordinates)
+		cout << it << endl;
+
+	return make_tuple(coordinates[0], coordinates[1]);
 }
