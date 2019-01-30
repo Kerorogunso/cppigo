@@ -1,3 +1,4 @@
+#include <sstream>
 #include "game.h"
 
 GoGame::GoGame()
@@ -19,19 +20,10 @@ void GoGame::play(int row, int col)
 	int stone = BLACK;
 	if (this->currentPlayer == this->white)
 	{
-		int stone = WHITE;
+		stone = WHITE;
 	}
 
-	try
-	{
-		goban.placeStone(stone, row, col);
-	}
-	catch(logic_error)
-	{
-		cout << "Invalid Move." << endl;
-	}
-	this->switchActivePlayer();
-
+	goban.placeStone(stone, row, col);
 }
 
 void GoGame::startGame()
@@ -40,12 +32,38 @@ void GoGame::startGame()
 	do
 	{
 		cout << "What's your move: ";
-		cin >> move;
+		getline(cin, move);
 		tuple<int, int> parsedMove = parseMove(move);
-		cout << get<0>(parsedMove) << "," << get<1>(parsedMove);
-		this->play(get<0>(parsedMove), get<1>(parsedMove));
+
+		try 
+		{
+			int row = get<0>(parsedMove);
+			int col = get<1>(parsedMove);
+
+			this->play(row, col);
+
+			std::vector<tuple<int,int>> adjacentStones = {
+				{max(row - 1, 0), col},
+				{row, max(col - 1, 0)},
+				{min(row + 1, this->goban.getBoardSize() - 1), col},
+				{row, min(col + 1, this->goban.getBoardSize() - 1)}
+			};
+
+			for (auto adjacent : adjacentStones)
+			{
+				cout << get<0>(adjacent) << get<1>(adjacent) << endl;
+				this->checkForCapturedStones(get<0>(adjacent), get<1>(adjacent));
+			}
+		}
+		catch(logic_error)
+		{
+			cout << "Invalid Move." << endl;
+			continue;
+		}
 		cout << endl;
-		//this->goban.displayBoard();
+		this->switchActivePlayer();
+		cout << "Current player:" << this->currentPlayer.color << endl;
+		this->goban.displayBoard();
 	} while (move != "quit");
 
 }
@@ -94,9 +112,6 @@ tuple<int, int> parseMove(string move)
 	{
 		coordinates.push_back(n);
 	}
-
-	for (auto it : coordinates)
-		cout << it << endl;
 
 	return make_tuple(coordinates[0], coordinates[1]);
 }

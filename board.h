@@ -41,3 +41,4 @@ class Goban
 };
 
 bool isInvalidStone(int stone);
+Group getAdjacentSquares(int row, int col, int boardSize);

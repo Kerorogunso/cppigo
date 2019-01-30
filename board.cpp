@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <queue>
 #include <iostream>
+#include <io.h>
+#include <fcntl.h>
 
 #include "board.h"
 
@@ -43,7 +45,7 @@ void Goban::placeStone(int stone, int row, int column)
 		throw logic_error("Stone coordinates is not in range.");
 	}
 
-	if (board(row, column) != EMPTY)
+	if (board(row, column) != EMPTY && stone !=EMPTY)
 	{
 		throw logic_error("There is a stone already there.");
 	}
@@ -106,18 +108,33 @@ Group Goban::returnNeighbors(int row, int col)
 
 void Goban::displayBoard()
 {
-	const string BLACK_UNICODE = "\u25CF";
-	const string WHITE_UNICODE = "\u25CB";
+	//const string BLACK_UNICODE = "\u25CF";
+	//const string WHITE_UNICODE = "\u25CB";
 
-	const string BOX_TOP_LEFT = "\u250E";
-	const string BOX_TOP_RIGHT = "\u2516";
-	const string BOX_TOP = "\u2530";
-	const string BOX_LEFT = "\u2520";
-	const string BOX_RIGHT = "\u252B";
-	const string BOX_BOTTOM_LEFT = "\u2516";
-	const string BOX_BOTTOM_RIGHT = "\u251B";
-	const string BOX_BOTTOM = "\u253A";
-	const string BOX_CENTRE = "\u254B";
+	//const string BOX_TOP_LEFT = "\u250E";
+	//const string BOX_TOP_RIGHT = "\u2516";
+	//const string BOX_TOP = "\u2530";
+	//const string BOX_LEFT = "\u2520";
+	//const string BOX_RIGHT = "\u252B";
+	//const string BOX_BOTTOM_LEFT = "\u2516";
+	//const string BOX_BOTTOM_RIGHT = "\u251B";
+	//const string BOX_BOTTOM = "\u253A";
+	//const string BOX_CENTRE = "\u254B";
+
+	const string BLACK_UNICODE = "B";
+	const string WHITE_UNICODE = "W";
+
+	const string BOX_TOP_LEFT = "+";
+	const string BOX_TOP_RIGHT = "+";
+	const string BOX_TOP = "+";
+	const string BOX_LEFT = "+";
+	const string BOX_RIGHT = "+";
+	const string BOX_BOTTOM_LEFT = "+";
+	const string BOX_BOTTOM_RIGHT = "+";
+	const string BOX_BOTTOM = "+";
+	const string BOX_CENTRE = "+";
+	
+	string gridChar;
 
 	for (int i = 0; i < board.size1(); ++i)
 	{
@@ -125,44 +142,46 @@ void Goban::displayBoard()
 		{
 			if (board(i, j) == BLACK)
 			{
-				cout << BLACK_UNICODE;
+				gridChar = BLACK_UNICODE;
 			}
 			else if (board(i, j) == WHITE)
 			{
-				cout << WHITE_UNICODE;
+				gridChar = WHITE_UNICODE;
 			}
 			else
 			{
 				if (i == 0)
 				{
 					if (j == 0)
-						cout << BOX_TOP_LEFT;
-					else if (j == board.size2 - 1)
-						cout << BOX_TOP_RIGHT;
+						gridChar = BOX_TOP_LEFT;
+					else if (j == board.size2() - 1)
+						gridChar = BOX_TOP_RIGHT;
 					else
-						cout << BOX_TOP;
+						gridChar = BOX_TOP;
 				}
 
 				else if (j == 0)
 				{
-					if (i == board.size1 - 1)
-						cout << BOX_BOTTOM_LEFT;
+					if (i == board.size1() - 1)
+						gridChar = BOX_BOTTOM_LEFT;
 					else
-						cout << BOX_LEFT;
+						gridChar = BOX_LEFT;
 				}
 
-				else if (i == board.size1 - 1)
+				else if (i == board.size1() - 1)
 				{
-					if (j == board.size2 - 1)
-						cout << BOX_BOTTOM_RIGHT;
+					if (j == board.size2() - 1)
+						gridChar = BOX_BOTTOM_RIGHT;
 					else
-						cout << BOX_BOTTOM;
+						gridChar = BOX_BOTTOM;
 				}
-				else if (j == board.size2 - 1)
-					cout << BOX_RIGHT;
+				else if (j == board.size2() - 1)
+					gridChar = BOX_RIGHT;
 				else
-					cout << BOX_CENTRE;
+					gridChar = BOX_CENTRE;
+				
 			}
+			cout << gridChar;
 		}
 		cout << endl;
 	}
@@ -179,12 +198,7 @@ int Goban::getLiberties(Group neighbors)
 		int neighborRow = get<0>(coordinates);
 		int neighborColumn = get<1>(coordinates);
 
-		Group adjacentSquares = {
-			make_pair(neighborRow + 1, neighborColumn),
-			make_pair(neighborRow - 1, neighborColumn),
-			make_pair(neighborRow, neighborColumn + 1),
-			make_pair(neighborRow, neighborColumn - 1)
-		};
+		Group adjacentSquares = getAdjacentSquares(neighborRow, neighborColumn, this->getBoardSize());
 
 		for (auto adjacent: adjacentSquares)
 		{	
@@ -217,12 +231,7 @@ bool Goban::isEmpty(tuple<int, int> coordinates)
 void Goban::getNeighbors(Group *neighbors, int row, int col)
 {	
 	
-	Group potentialNeighbors = {
-		make_tuple(row, col + 1),
-		make_tuple(row, col - 1),
-		make_tuple(row + 1, col),
-		make_tuple(row - 1, col)
-	 };
+	Group potentialNeighbors = getAdjacentSquares(row, col, this->getBoardSize());
 	
 	for (auto neighbor : potentialNeighbors)
 	{	
@@ -243,4 +252,15 @@ void Goban::getNeighbors(Group *neighbors, int row, int col)
 			}
 		}
 	}
+}
+
+Group getAdjacentSquares(int row, int col, int boardSize)
+{
+	Group adjacentSquares = {
+		{max(row - 1, 0), col},
+		{min(row + 1, boardSize - 1), col},
+		{row, max(col - 1, 0)},
+		{row, min(col + 1, boardSize - 1)}
+	};
+	return adjacentSquares;
 }
