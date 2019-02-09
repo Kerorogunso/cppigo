@@ -22,14 +22,15 @@ class Goban
 
 		Goban();
 		Goban(int boardSize);
-		Goban(Goban& goban);
 
 		void operator=(const Goban& goban);
+		const bool operator==(const Goban& goban);
 
 		void placeStone(int stone, int row, int column);
 		void placeStone(int stone, tuple<int, int> index);
 		int getBoardSize();
 		void getNeighbors(Group *neighbors, int row, int col);
+		void checkSelfAtari(int row, int col);
 		Group returnNeighbors(int row, int col);
 		void displayBoard();
 		int getLiberties(Group neighbors);

@@ -2,14 +2,11 @@
 #include <stdexcept>
 #include <queue>
 #include <iostream>
-#include <io.h>
-#include <fcntl.h>
 
 #include "board.h"
 
 using namespace std;
 using namespace boost::numeric::ublas;
-
 
 Goban::Goban()
 {
@@ -27,12 +24,6 @@ Goban::Goban(int boardSize)
 	board = matrix<int>(boardSize, boardSize, 0);
 }
 
-Goban::Goban(Goban& goban)
-{
-	board = goban.board;
-	boardSize = goban.getBoardSize();
-}
-
 void Goban::placeStone(int stone, int row, int column)
 {	
 	if (isInvalidStone(stone))
@@ -45,7 +36,7 @@ void Goban::placeStone(int stone, int row, int column)
 		throw logic_error("Stone coordinates is not in range.");
 	}
 
-	if (board(row, column) != EMPTY && stone !=EMPTY)
+	if (board(row, column) != EMPTY && stone != EMPTY)
 	{
 		throw logic_error("There is a stone already there.");
 	}
@@ -71,6 +62,21 @@ void Goban::operator=(const Goban & goban)
 	board = goban.board;
 }
 
+const bool Goban::operator==(const Goban& goban)
+{
+	for (int i = 0; i < getBoardSize(); ++i)
+	{
+		for (int j = 0; j < getBoardSize(); ++j)
+		{
+			if (this->board(i, j) != goban.board(i, j))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 bool notInGroup(Group &groupElements, tuple<int, int> stoneIndex)
 {
 	const auto position = find(groupElements.begin(), groupElements.end(), stoneIndex);
@@ -83,13 +89,13 @@ bool notInGroup(Group &groupElements, tuple<int, int> stoneIndex)
 
 bool isInvalidStone(int stone)
 {
-	return stone != BLACK && stone != WHITE && stone == EMPTY;
+	return stone != BLACK && stone != WHITE && stone != EMPTY;
 }
 
 bool Goban::isNotInRange(int row, int column)
 {
-	bool withinRow = (row >= 0 && row < getBoardSize());
-	bool withinColumn = (column >= 0 && row < getBoardSize());
+	bool withinRow = (row >= 0) && (row < getBoardSize());
+	bool withinColumn = (column >= 0) && (row < getBoardSize());
 
 	if (withinRow && withinColumn)
 	{
@@ -101,6 +107,7 @@ bool Goban::isNotInRange(int row, int column)
 Group Goban::returnNeighbors(int row, int col)
 {
 	Group neighbors = {};
+	neighbors.push_back({ row, col });
 	getNeighbors(&neighbors, row, col);
 
 	return neighbors;
@@ -112,9 +119,9 @@ void Goban::displayBoard()
 	//const string WHITE_UNICODE = "\u25CB";
 
 	//const string BOX_TOP_LEFT = "\u250E";
-	//const string BOX_TOP_RIGHT = "\u2516";
+	//const string BOX_TOP_RIGHT = "\u2513";
 	//const string BOX_TOP = "\u2530";
-	//const string BOX_LEFT = "\u2520";
+	//const string BOX_LEFT = "\u2523";
 	//const string BOX_RIGHT = "\u252B";
 	//const string BOX_BOTTOM_LEFT = "\u2516";
 	//const string BOX_BOTTOM_RIGHT = "\u251B";
@@ -136,9 +143,9 @@ void Goban::displayBoard()
 	
 	string gridChar;
 
-	for (int i = 0; i < board.size1(); ++i)
+	for (unsigned int i = 0; i < board.size1(); ++i)
 	{
-		for (int j = 0; j < board.size2(); ++j)
+		for (unsigned int j = 0; j < board.size2(); ++j)
 		{
 			if (board(i, j) == BLACK)
 			{
@@ -192,25 +199,26 @@ int Goban::getLiberties(Group neighbors)
 	
 	int numLiberties = 0;
 	Group libertyCoords = {};
+	tuple<int, int> stoneCoords = neighbors[0];
+
+	if (board(get<0>(stoneCoords), get<1>(stoneCoords)) == EMPTY)
+	{
+		return 1;
+	}
 	
 	for (auto coordinates : neighbors)
 	{
 		int neighborRow = get<0>(coordinates);
 		int neighborColumn = get<1>(coordinates);
 
-		Group adjacentSquares = getAdjacentSquares(neighborRow, neighborColumn, this->getBoardSize());
+		Group adjacentSquares = getAdjacentSquares(neighborRow, neighborColumn, getBoardSize());
 
 		for (auto adjacent: adjacentSquares)
 		{	
 			int row = get<0>(adjacent);
 			int col = get<1>(adjacent);
 
-			if (this->isNotInRange(row, col))
-			{
-				continue;
-			}
-
-			if (this->isEmpty(adjacent) && find(libertyCoords.begin(), libertyCoords.end(), adjacent) == libertyCoords.end())
+			if (isEmpty(adjacent) && find(libertyCoords.begin(), libertyCoords.end(), adjacent) == libertyCoords.end())
 			{
 				numLiberties++;
 				libertyCoords.push_back(adjacent);
@@ -225,25 +233,20 @@ bool Goban::isEmpty(tuple<int, int> coordinates)
 {
 	int row = get<0>(coordinates);
 	int col = get<1>(coordinates);
-	return this->board(row, col) == EMPTY;
+	return board(row, col) == EMPTY;
 }
 
 void Goban::getNeighbors(Group *neighbors, int row, int col)
 {	
 	
-	Group potentialNeighbors = getAdjacentSquares(row, col, this->getBoardSize());
+	Group potentialNeighbors = getAdjacentSquares(row, col, getBoardSize());
 	
 	for (auto neighbor : potentialNeighbors)
 	{	
 		int neighborRow = get<0>(neighbor);
 		int neighborCol = get<1>(neighbor);
 
-		if (isNotInRange(neighborRow, neighborCol))
-		{
-			continue;
-		}
-		
-		if (this->board(neighborRow, neighborCol) == this->board(row, col))
+		if (board(neighborRow, neighborCol) == board(row, col))
 		{
 			if (find(neighbors->begin(), neighbors->end(), neighbor) == neighbors->end())
 			{
@@ -263,4 +266,15 @@ Group getAdjacentSquares(int row, int col, int boardSize)
 		{row, min(col + 1, boardSize - 1)}
 	};
 	return adjacentSquares;
+}
+
+void Goban::checkSelfAtari(int row, int col)
+{
+	Group stoneGroup = returnNeighbors(row, col);
+	int liberties = getLiberties(stoneGroup);
+	if (liberties == 0)
+	{
+		placeStone(EMPTY, row, col);
+		throw logic_error("Invalid Move: Self Atari");
+	}
 }
