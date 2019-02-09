@@ -17,6 +17,7 @@ GoGame::GoGame(Goban board, Player player1, Player player2)
 	currentPlayer = player1;
 	boardHistory.push_back(board);
 }
+
 GoGame::GoGame(Goban board, Player black, Player white, std::vector<Goban> boardHistory)
 {
 	this->goban = board;
@@ -25,6 +26,7 @@ GoGame::GoGame(Goban board, Player black, Player white, std::vector<Goban> board
 	this->boardHistory = boardHistory;
 	this->currentPlayer = black;
 }
+
 void GoGame::play(int row, int col)
 {
 	int stone = BLACK;
@@ -58,6 +60,7 @@ void GoGame::startGame()
 			bool captured = false;
 			for (auto adjacent : adjacentStones)
 			{
+				cout << get<0>(adjacent) << "," << get<1>(adjacent) << endl;
 				captured = captured || checkForCapturedStones(get<0>(adjacent), get<1>(adjacent));
 			}
 
@@ -142,6 +145,7 @@ void GoGame::koCheck()
 	
 	if (find(boardHistory.begin(), boardHistory.end(), currentState) != boardHistory.end())
 	{
+		this->goban = boardHistory[boardHistory.size() - 1];
 		throw logic_error("Ko rule.");
 	}
 }	
