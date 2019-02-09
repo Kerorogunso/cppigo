@@ -18,7 +18,6 @@ class Goban
 {
     public:
         int boardSize;
-        matrix<int> board;
 
 		Goban();
 		Goban(int boardSize);
@@ -35,10 +34,13 @@ class Goban
 		void displayBoard();
 		int getLiberties(Group neighbors);
 		bool isEmpty(tuple<int, int> coordinates);
+        const matrix<int> &board() const;
+        matrix<int> *board_mutable();
 	
 	private:
 		const std::vector<int> validBoardSizes = { 9, 13, 19 };
 		bool isNotInRange(int row, int column);
+        matrix<int> m_board;
 };
 
 bool isInvalidStone(int stone);

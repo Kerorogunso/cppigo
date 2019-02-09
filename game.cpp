@@ -110,7 +110,7 @@ bool GoGame::checkForCapturedStones(int row, int col)
 	{
 		for (auto coordinates : stoneGroup)
 		{
-			if (goban.board(get<0>(coordinates), get<1>(coordinates)) == color) 
+			if (goban.board()(get<0>(coordinates), get<1>(coordinates)) == color) 
 			{
 				goban.placeStone(EMPTY, coordinates);
 			}

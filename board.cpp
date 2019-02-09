@@ -11,7 +11,7 @@ using namespace boost::numeric::ublas;
 Goban::Goban()
 {
 	boardSize = 19;
-	board = matrix<int>(boardSize, boardSize, 0);
+    m_board = matrix<int>(boardSize, boardSize, 0);
 }
 
 Goban::Goban(int boardSize)
@@ -21,7 +21,7 @@ Goban::Goban(int boardSize)
 		throw invalid_argument("Board size must be 9, 13 or 19.");
 	}
 	this->boardSize = boardSize;
-	board = matrix<int>(boardSize, boardSize, 0);
+    m_board = matrix<int>(boardSize, boardSize, 0);
 }
 
 void Goban::placeStone(int stone, int row, int column)
@@ -36,12 +36,12 @@ void Goban::placeStone(int stone, int row, int column)
 		throw logic_error("Stone coordinates is not in range.");
 	}
 
-	if (board(row, column) != EMPTY && stone != EMPTY)
+	if (m_board(row, column) != EMPTY && stone != EMPTY)
 	{
 		throw logic_error("There is a stone already there.");
 	}
 	
-	board (row, column) = stone;
+    m_board(row, column) = stone;
 }
 
 void Goban::placeStone(int stone, tuple<int, int> index)
@@ -59,7 +59,7 @@ int Goban::getBoardSize()
 void Goban::operator=(const Goban & goban)
 {
 	boardSize = goban.boardSize;
-	board = goban.board;
+    m_board = goban.board();
 }
 
 const bool Goban::operator==(const Goban& goban)
@@ -68,7 +68,7 @@ const bool Goban::operator==(const Goban& goban)
 	{
 		for (int j = 0; j < getBoardSize(); ++j)
 		{
-			if (this->board(i, j) != goban.board(i, j))
+			if (this->m_board(i, j) != goban.board()(i, j))
 			{
 				return false;
 			}
@@ -102,6 +102,16 @@ bool Goban::isNotInRange(int row, int column)
 		return false;
 	}
 	return true;
+}
+
+const matrix<int> &Goban::board() const
+{
+    return m_board;
+}
+
+ matrix<int> *Goban::board_mutable()
+{
+    return &m_board;
 }
 
 Group Goban::returnNeighbors(int row, int col)
@@ -143,15 +153,15 @@ void Goban::displayBoard()
 	
 	string gridChar;
 
-	for (unsigned int i = 0; i < board.size1(); ++i)
+	for (unsigned int i = 0; i < m_board.size1(); ++i)
 	{
-		for (unsigned int j = 0; j < board.size2(); ++j)
+		for (unsigned int j = 0; j < m_board.size2(); ++j)
 		{
-			if (board(i, j) == BLACK)
+			if (m_board(i, j) == BLACK)
 			{
 				gridChar = BLACK_UNICODE;
 			}
-			else if (board(i, j) == WHITE)
+			else if (m_board(i, j) == WHITE)
 			{
 				gridChar = WHITE_UNICODE;
 			}
@@ -161,7 +171,7 @@ void Goban::displayBoard()
 				{
 					if (j == 0)
 						gridChar = BOX_TOP_LEFT;
-					else if (j == board.size2() - 1)
+					else if (j == m_board.size2() - 1)
 						gridChar = BOX_TOP_RIGHT;
 					else
 						gridChar = BOX_TOP;
@@ -169,20 +179,20 @@ void Goban::displayBoard()
 
 				else if (j == 0)
 				{
-					if (i == board.size1() - 1)
+					if (i == m_board.size1() - 1)
 						gridChar = BOX_BOTTOM_LEFT;
 					else
 						gridChar = BOX_LEFT;
 				}
 
-				else if (i == board.size1() - 1)
+				else if (i == m_board.size1() - 1)
 				{
-					if (j == board.size2() - 1)
+					if (j == m_board.size2() - 1)
 						gridChar = BOX_BOTTOM_RIGHT;
 					else
 						gridChar = BOX_BOTTOM;
 				}
-				else if (j == board.size2() - 1)
+				else if (j == m_board.size2() - 1)
 					gridChar = BOX_RIGHT;
 				else
 					gridChar = BOX_CENTRE;
@@ -201,7 +211,7 @@ int Goban::getLiberties(Group neighbors)
 	Group libertyCoords = {};
 	tuple<int, int> stoneCoords = neighbors[0];
 
-	if (board(get<0>(stoneCoords), get<1>(stoneCoords)) == EMPTY)
+	if (m_board(get<0>(stoneCoords), get<1>(stoneCoords)) == EMPTY)
 	{
 		return 1;
 	}
@@ -233,7 +243,7 @@ bool Goban::isEmpty(tuple<int, int> coordinates)
 {
 	int row = get<0>(coordinates);
 	int col = get<1>(coordinates);
-	return board(row, col) == EMPTY;
+	return m_board(row, col) == EMPTY;
 }
 
 void Goban::getNeighbors(Group *neighbors, int row, int col)
@@ -246,7 +256,7 @@ void Goban::getNeighbors(Group *neighbors, int row, int col)
 		int neighborRow = get<0>(neighbor);
 		int neighborCol = get<1>(neighbor);
 
-		if (board(neighborRow, neighborCol) == board(row, col))
+		if (m_board(neighborRow, neighborCol) == m_board(row, col))
 		{
 			if (find(neighbors->begin(), neighbors->end(), neighbor) == neighbors->end())
 			{

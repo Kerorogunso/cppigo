@@ -23,10 +23,10 @@ TEST(Board, PlaceStone)
 {
 	Goban testGoban(9);
 	testGoban.placeStone(BLACK, { 5, 4 });
-	EXPECT_EQ(testGoban.board(5,4), BLACK);
+	EXPECT_EQ(testGoban.board()(5,4), BLACK);
 
 	testGoban.placeStone(WHITE, 5, 4);
-	EXPECT_EQ(testGoban.board(5,4), WHITE);
+	EXPECT_EQ(testGoban.board()(5,4), WHITE);
 	
 	EXPECT_THROW(testGoban.placeStone(WHITE, { 10, 5 }), std::logic_error);
 	EXPECT_THROW(testGoban.placeStone(BLACK, 5, 10), std::logic_error);
@@ -58,7 +58,7 @@ TEST(Board, BoardAssignment)
 	{
 		for (int j = 0; j < 13; ++j)
 		{
-			EXPECT_EQ(oldBoard.board(i, j), newBoard.board(i, j));
+			EXPECT_EQ(oldBoard.board()(i, j), newBoard.board()(i, j));
 		}
 	}
 
