@@ -2,6 +2,7 @@
 #include <random>
 
 #include "../board.cpp"
+
 TEST(Board, BoardSize)
 {	
 	Goban goban9x9(9);
