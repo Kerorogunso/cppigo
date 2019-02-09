@@ -25,7 +25,6 @@ GoGame::GoGame(Goban board, Player black, Player white, std::vector<Goban> board
 	this->boardHistory = boardHistory;
 	this->currentPlayer = black;
 }
-
 void GoGame::play(int row, int col)
 {
 	int stone = BLACK;
@@ -52,6 +51,8 @@ void GoGame::startGame()
 			int col = get<1>(parsedMove);
 
 			play(row, col);
+			cout << this->goban.getLiberties({ make_tuple(1,1) });
+
 			Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
 			
 			bool captured = false;
