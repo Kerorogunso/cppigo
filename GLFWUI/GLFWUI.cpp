@@ -8,7 +8,8 @@
 #include "glfw3native.h"
 #include <iostream>
 
-GLFWUI::GLFWUI()
+GLFWUI::GLFWUI(Goban *board)
+    : m_board(board)
 {
 }
 
@@ -41,6 +42,15 @@ bool GLFWUI::setupUI(const UIOptions &options)
         return false;
     }
 
+    glfwMakeContextCurrent(window);
+    glfwPollEvents();
+
+    m_killRenderThread = false;
+    m_renderThread = std::make_unique<std::future<void>>(std::async([&]()
+    {
+        renderLoop();
+    }));
+
     m_setup = true;
     return true;
 }
@@ -49,7 +59,21 @@ bool GLFWUI::quitUI()
 {
     if (m_setup)
     {
+        m_killRenderThread = true;
+        if (m_renderThread)
+        {
+            m_renderThread->wait();
+        }
+
         glfwTerminate();
     }
     return true;
+}
+
+void GLFWUI::renderLoop()
+{
+    while (!m_killRenderThread)
+    {
+        glfwPollEvents();
+    }
 }
