@@ -57,6 +57,7 @@ public:
     bool updateBoard(const boost::numeric::ublas::matrix<int> &board);
 
 private:
+    void handleGlobalMouseEvents();
     void renderLoop();
     void drawBoard();
     void setupDrawing();
