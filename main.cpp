@@ -20,9 +20,11 @@ int main()
 
     while (true)
     {
+        ui.updateBoard(go.goban.board());
+
         string move;
         cout << "What's your move:" << endl;
-        cin >> move;
+        while (cin >> move) {};
         tuple<int, int> parsedMove = parseMove(move);
         go.play(parsedMove);
     }
