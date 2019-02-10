@@ -124,10 +124,16 @@ void GLFWUI::drawStone(const Vector2f &centre, float radius, const ColourRGBf &c
 
     glColor3f(colour.red, colour.green, colour.blue);
     glBegin(GL_POLYGON);
-    glVertex2f(left, top);
-    glVertex2f(right, top);
-    glVertex2f(right, bottom);
-    glVertex2f(left, bottom);
+
+    constexpr int numVertices = 20;
+    for (int i = 0; i < numVertices; ++i)
+    {
+        const float angle = 2.f * kPi * static_cast<float>(i) / numVertices;
+        const float xPos = centre.x + radius * std::sin(angle);
+        const float yPos = centre.y + radius * std::cos(angle);
+        glVertex2f(xPos, yPos);
+    }
+
     glEnd();
 }
 
@@ -178,7 +184,7 @@ void GLFWUI::drawBoard()
     {
         for (int x = 0; x < boardWidth; ++x)
         {
-            const stones stone = static_cast<stones>((*m_board)(y, x));
+            const stones stone = stones::WHITE;// static_cast<stones>((*m_board)(y, x));
             if (stone == stones::EMPTY)
             {
                 continue;

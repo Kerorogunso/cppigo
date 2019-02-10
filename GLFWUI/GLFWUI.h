@@ -3,11 +3,14 @@
 #include "GLFWUIExports.h"
 #include "board.h"
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <future>
 #include <memory>
 #include <thread>
 
 struct GLFWwindow;
+
+constexpr double kPi = boost::math::constants::pi<double>();
 
 struct Vector3f
 {
