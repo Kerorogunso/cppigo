@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <random>
 
-#include "../board.cpp"
+#include "cppigo_lib/Board.h"
 
 TEST(Board, BoardSize)
 {    

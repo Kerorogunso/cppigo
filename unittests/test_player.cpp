@@ -1,6 +1,8 @@
 #include "pch.h"
 
-#include "../player.cpp"
+#include "cppigo_lib/Player.h"
+#include "cppigo_lib/GoGame.h"
+#include "cppigo_lib/Board.h"
 
 TEST(Player, CheckKomi)
 {

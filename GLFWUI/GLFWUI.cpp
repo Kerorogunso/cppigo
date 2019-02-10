@@ -4,13 +4,11 @@
 #include "pch.h"
 #include "glfw3.h"
 #include "GLFWUI.h"
+#include "Utilities/RectangleT.h"
 #include "glfw3native.h"
 #include <iostream>
 
 using namespace boost::numeric::ublas;
-
-constexpr ColourRGBf boardColour{ 219.f / 255.f, 158.f / 255.f, 46.f / 255.f };
-constexpr ColourRGBf gridColour{ 0.f, 0.f, 0.f };
 
 enum class MouseButton
 {
@@ -26,22 +24,25 @@ enum class MouseAction
 
 struct MouseEvent
 {
+    Vector2f position;
     MouseButton button;
     MouseAction action;
 };
 
 // global things to interact with GLFW (yuck!)
+///////////////////////////////////////////////////////
 Vector2f gLastMousePosition;
 std::queue<MouseEvent> gMouseEvents;
+///////////////////////////////////////////////////////
 
-ColourRGBf stoneToColour(stones stone)
+ColourRGBf GLFWUI::stoneToColour(stones stone)
 {
     switch (stone)
     {
     case stones::BLACK:
         return{ 0.f, 0.f, 0.f };
     case stones::EMPTY:
-        return boardColour;
+        return m_options.boardColour;
     case stones::WHITE:
         return { 1.f, 1.f, 1.f };
     }
@@ -77,6 +78,7 @@ void mouseButtonCallback(GLFWwindow *window, int mouseButton, int action, int mo
     MouseEvent mouseEvent;
     mouseEvent.button = static_cast<MouseButton>(mouseButton);
     mouseEvent.action = static_cast<MouseAction>(action);
+    mouseEvent.position = gLastMousePosition;
     gMouseEvents.push(std::move(mouseEvent));
 }
 
@@ -175,10 +177,61 @@ void GLFWUI::drawStone(const Vector2f &centre, float radius, const ColourRGBf &c
     glEnd();
 }
 
-void GLFWUI::drawBoard()
+Vector2f GLFWUI::screenCoordsToBoard(const Vector2f &screenCoords)
 {
-    const int boardWidth = m_board->size1();
-    const int boardHeight = m_board->size2();
+    if (m_boardSide == 0.f)
+    {
+        return {};
+    }
+
+    Vector2f boardCoords;
+    boardCoords.x = (screenCoords.x - m_boardStart.x) * (m_boardSize.width / m_boardSide);
+    boardCoords.y = (screenCoords.y - m_boardStart.y) * (m_boardSize.height / m_boardSide);
+    return boardCoords;
+}
+
+Vector2f GLFWUI::boardCoordsToScreen(const Vector2f &boardCoords)
+{
+    if (m_boardSize.width == 0.f || m_boardSize.height == 0.f)
+    {
+        return {};
+    }
+
+    Vector2f screenCoords;
+    screenCoords.x = m_boardStart.x + (m_boardSide / m_boardSize.width) * boardCoords.x;
+    screenCoords.y = m_boardStart.y + (m_boardSide / m_boardSize.height) * boardCoords.y;
+    return screenCoords;
+}
+
+void GLFWUI::drawHorizontalGridlines()
+{
+    glLineWidth(1.f);
+    for (int y = 0; y <= m_boardSize.height; ++y)
+    {
+        glColor3f(m_options.gridColour.red, m_options.gridColour.green, m_options.gridColour.blue);
+        glBegin(GL_LINES);
+        glVertex2f(m_boardStart.x, m_boardStart.y + m_squareSide * y);
+        glVertex2f(m_boardStart.x + m_boardSide, m_boardStart.y + m_squareSide * y);
+        glEnd();
+    }
+}
+
+void GLFWUI::drawVerticalGridlines()
+{
+    for (int x = 0; x <= m_boardSize.width; ++x)
+    {
+        glColor3f(m_options.gridColour.red, m_options.gridColour.green, m_options.gridColour.blue);
+        glBegin(GL_LINES);
+        glVertex2f(m_boardStart.x + m_squareSide * x, m_boardStart.y);
+        glVertex2f(m_boardStart.x + m_squareSide * x, m_boardStart.y + m_boardSide);
+        glEnd();
+    }
+}
+
+void GLFWUI::updateForNewScreenSize()
+{
+    m_boardSize.height = m_board->size1();
+    m_boardSize.width = m_board->size2();
 
     int windowWidth = 0;
     int windowHeight = 0;
@@ -188,54 +241,45 @@ void GLFWUI::drawBoard()
 
     setupDrawing();
 
-    const int boardHeightNoBorder = m_board->size1();
-    const int boardWidthNoBorder = m_board->size2();
-
     const int boardSideNoBorder = std::min(windowWidth, windowHeight);
     const float borderThickness = m_options.boardBorderFraction * boardSideNoBorder;
-    const float boardSide = static_cast<float>(boardSideNoBorder) - 2.f * borderThickness;
-    const float xBoardStart = .5f * (static_cast<float>(windowWidth) - boardSide);
-    const float yBoardStart = .5f * (static_cast<float>(windowHeight) - boardSide);
+    m_boardSide = static_cast<float>(boardSideNoBorder) - 2.f * borderThickness;
+    m_boardStart.x = .5f * (static_cast<float>(windowWidth) - m_boardSide);
+    m_boardStart.y = .5f * (static_cast<float>(windowHeight) - m_boardSide);
+    m_squareSide = m_boardSide / m_boardSize.width;
+}
 
-    const float squareSide = boardSide / boardWidth;
+void GLFWUI::drawBoard()
+{
+    updateForNewScreenSize();
+    drawHorizontalGridlines();
+    drawVerticalGridlines();
 
-    glLineWidth(1.f);
-    for (int y = 0; y <= boardHeight; ++y)
+    for (int y = 0; y < m_boardSize.height; ++y)
     {
-        glColor3f(gridColour.red, gridColour.green, gridColour.blue);
-        glBegin(GL_LINES);
-        glVertex2f(xBoardStart, yBoardStart + squareSide * y);
-        glVertex2f(xBoardStart + boardSide, yBoardStart + squareSide * y);
-        glEnd();
-    }
-
-    for (int x = 0; x <= boardWidth; ++x)
-    {
-        glColor3f(gridColour.red, gridColour.green, gridColour.blue);
-        glBegin(GL_LINES);
-        glVertex2f(xBoardStart + squareSide * x, yBoardStart);
-        glVertex2f(xBoardStart + squareSide * x, yBoardStart + boardSide);
-        glEnd();
-    }
-
-    for (int y = 0; y < boardHeight; ++y)
-    {
-        for (int x = 0; x < boardWidth; ++x)
+        for (int x = 0; x < m_boardSize.width; ++x)
         {
-            const stones stone = stones::WHITE;// static_cast<stones>((*m_board)(y, x));
+            const stones stone = static_cast<stones>((*m_board)(y, x));
             if (stone == stones::EMPTY)
             {
                 continue;
             }
 
-            const float centreX = xBoardStart + squareSide * (0.5f + x);
-            const float centreY = yBoardStart + squareSide * (0.5f + y);
             const ColourRGBf colour = stoneToColour(stone);
-            const float radius = 0.4f * squareSide;
+            const float radius = 0.4f * m_squareSide;
 
-            drawStone({ centreX, centreY }, radius, colour);
+            // in board coordinates (0,0) means the top left coordinate of the square (0,0) but
+            // we want to draw in the middle, so we add 0.5 to x and y
+            const Vector2f centre_boardCoords{ static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f };
+            const Vector2f cente = boardCoordsToScreen(centre_boardCoords);
+            drawStone(cente, radius, colour);
         }
     }
+}
+
+void GLFWUI::addBoardPositionClickedCallback(std::function<void(Vector2i)> callback)
+{
+    m_boardPositionClickedCallbacks.push_back(callback);
 }
 
 void GLFWUI::handleGlobalMouseEvents()
@@ -248,8 +292,23 @@ void GLFWUI::handleGlobalMouseEvents()
         switch (event.action)
         {
         case MouseAction::kPress:
-            // pass to game
+        {
+            const Vector2f boardPosition = screenCoordsToBoard(event.position);
+            const Vector2i boardPositionInteger{
+                static_cast<int>(boardPosition.x),
+                static_cast<int>(boardPosition.y)
+            };
+
+            if (boardPositionInteger.x >= 0 && boardPositionInteger.x < m_boardSize.width &&
+                boardPositionInteger.y >= 0 && boardPositionInteger.y < m_boardSize.height)
+            {
+                for (auto callback : m_boardPositionClickedCallbacks)
+                {
+                    callback(boardPositionInteger);
+                }
+            }
             break;
+        }
         case MouseAction::kRelease:
             break;
         }
@@ -260,7 +319,7 @@ void GLFWUI::renderLoop()
 {
     while (!m_killRenderThread)
     {
-        glClearColor(boardColour.red, boardColour.green, boardColour.blue, 1.0f);
+        glClearColor(m_options.boardColour.red, m_options.boardColour.green, m_options.boardColour.blue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         drawStone(gLastMousePosition, 5.f, { 1.f, 0.f, 0.f });

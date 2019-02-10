@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppigo", "cppigo.vcxproj", "{879131CC-8446-4876-ADC2-3C62DAD449D8}"
 	ProjectSection(ProjectDependencies) = postProject
+		{74946C63-CE24-4D13-916E-141762084E70} = {74946C63-CE24-4D13-916E-141762084E70}
 		{DED9C663-9586-4C34-B89F-45D248B921A4} = {DED9C663-9586-4C34-B89F-45D248B921A4}
 	EndProjectSection
 EndProject
@@ -14,6 +15,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unit
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLFWUI", "GLFWUI\GLFWUI.vcxproj", "{DED9C663-9586-4C34-B89F-45D248B921A4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utilities", "Utilities\Utilities.vcxproj", "{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppigo_lib", "cppigo_lib\cppigo_lib.vcxproj", "{74946C63-CE24-4D13-916E-141762084E70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +52,22 @@ Global
 		{DED9C663-9586-4C34-B89F-45D248B921A4}.Release|x64.Build.0 = Release|x64
 		{DED9C663-9586-4C34-B89F-45D248B921A4}.Release|x86.ActiveCfg = Release|Win32
 		{DED9C663-9586-4C34-B89F-45D248B921A4}.Release|x86.Build.0 = Release|Win32
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Debug|x64.ActiveCfg = Debug|x64
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Debug|x64.Build.0 = Debug|x64
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Debug|x86.ActiveCfg = Debug|Win32
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Debug|x86.Build.0 = Debug|Win32
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Release|x64.ActiveCfg = Release|x64
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Release|x64.Build.0 = Release|x64
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Release|x86.ActiveCfg = Release|Win32
+		{49FA6E87-9DBF-4EE4-B463-EEE2AC8B1925}.Release|x86.Build.0 = Release|Win32
+		{74946C63-CE24-4D13-916E-141762084E70}.Debug|x64.ActiveCfg = Debug|x64
+		{74946C63-CE24-4D13-916E-141762084E70}.Debug|x64.Build.0 = Debug|x64
+		{74946C63-CE24-4D13-916E-141762084E70}.Debug|x86.ActiveCfg = Debug|Win32
+		{74946C63-CE24-4D13-916E-141762084E70}.Debug|x86.Build.0 = Debug|Win32
+		{74946C63-CE24-4D13-916E-141762084E70}.Release|x64.ActiveCfg = Release|x64
+		{74946C63-CE24-4D13-916E-141762084E70}.Release|x64.Build.0 = Release|x64
+		{74946C63-CE24-4D13-916E-141762084E70}.Release|x86.ActiveCfg = Release|Win32
+		{74946C63-CE24-4D13-916E-141762084E70}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
