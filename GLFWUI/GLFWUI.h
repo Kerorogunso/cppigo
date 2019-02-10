@@ -18,6 +18,8 @@ public:
         bool fullscreen = false;
         int windowWidth = 400;
         int windowHeight = 300;
+
+        float boardBorderFraction = 0.01f;
     };
 
     GLFWUI();
@@ -34,6 +36,7 @@ public:
 private:
     void renderLoop();
     void drawBoard();
+    void setupDrawing();
 
     GLFWwindow* m_window = nullptr;
     std::unique_ptr<boost::numeric::ublas::matrix<int>> m_board = nullptr;
