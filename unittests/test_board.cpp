@@ -22,14 +22,22 @@ TEST(Board, BoardSize)
 TEST(Board, PlaceStone)
 {
     Goban testGoban(9);
-    testGoban.placeStone(BLACK, { 5, 4 });
+    GobanError testSuccess = testGoban.placeStone(BLACK, { 5, 4 });
     EXPECT_EQ(testGoban.board()(5,4), BLACK);
+    EXPECT_EQ(testSuccess, GobanError::kSuccess);
 
-    testGoban.placeStone(WHITE, 4, 4);
+    GobanError testSuccess2 = testGoban.placeStone(WHITE, 4, 4);
     EXPECT_EQ(testGoban.board()(4,4), WHITE);
+    EXPECT_EQ(testSuccess2, GobanError::kSuccess);
     
-    EXPECT_THROW(testGoban.placeStone(WHITE, { 10, 5 }), std::logic_error);
-    EXPECT_THROW(testGoban.placeStone(BLACK, 5, 10), std::logic_error);
+    GobanError range = testGoban.placeStone(WHITE, { 10, 5 });
+    GobanError range2 = testGoban.placeStone(BLACK, 5, 10);
+    EXPECT_EQ(range, GobanError::kNotInRange);
+    EXPECT_EQ(range2, GobanError::kNotInRange);
+
+
+    GobanError stoneAlreadyThere = testGoban.placeStone(WHITE, 5, 4);
+    EXPECT_EQ(stoneAlreadyThere, GobanError::kStoneAlreadyThere);
 
 }
 
