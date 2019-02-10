@@ -9,18 +9,10 @@
 
 using namespace boost::numeric::ublas;
 
-struct Vector3f
-{
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
-};
+constexpr ColourRGBf boardColour{ 219.f / 255.f, 158.f / 255.f, 46.f / 255.f };
+constexpr ColourRGBf gridColour{ 0.f, 0.f, 0.f };
 
-using ColourRGB = Vector3f;
-constexpr ColourRGB boardColour{ 219.f / 255.f, 158.f / 255.f, 46.f / 255.f };
-constexpr ColourRGB gridColour{ 0.f, 0.f, 0.f };
-
-ColourRGB stoneToColour(stones stone)
+ColourRGBf stoneToColour(stones stone)
 {
     switch (stone)
     {
@@ -113,12 +105,6 @@ bool GLFWUI::updateBoard(const matrix<int> &board)
     return true;
 }
 
-struct Vector2f
-{
-    float x = 0.f;
-    float y = 0.f;
-};
-
 void GLFWUI::setupDrawing()
 {
     glViewport(0, 0, m_options.windowWidth, m_options.windowHeight);
@@ -127,6 +113,22 @@ void GLFWUI::setupDrawing()
     glLoadIdentity();
     glOrtho(0, m_options.windowWidth, m_options.windowHeight, 0, 100, -100);
     glMatrixMode(GL_MODELVIEW);
+}
+
+void GLFWUI::drawStone(const Vector2f &centre, float radius, const ColourRGBf &colour)
+{
+    const float left = centre.x - radius;
+    const float right = centre.x + radius;
+    const float top = centre.y - radius;
+    const float bottom = centre.y + radius;
+
+    glColor3f(colour.red, colour.green, colour.blue);
+    glBegin(GL_POLYGON);
+    glVertex2f(left, top);
+    glVertex2f(right, top);
+    glVertex2f(right, bottom);
+    glVertex2f(left, bottom);
+    glEnd();
 }
 
 void GLFWUI::drawBoard()
@@ -156,7 +158,7 @@ void GLFWUI::drawBoard()
     glLineWidth(1.f);
     for (int y = 0; y <= boardHeight; ++y)
     {
-        glColor3f(gridColour.x, gridColour.y, gridColour.z);
+        glColor3f(gridColour.red, gridColour.green, gridColour.blue);
         glBegin(GL_LINES);
         glVertex2f(xBoardStart, yBoardStart + squareSide * y);
         glVertex2f(xBoardStart + boardSide, yBoardStart + squareSide * y);
@@ -165,7 +167,7 @@ void GLFWUI::drawBoard()
 
     for (int x = 0; x <= boardWidth; ++x)
     {
-        glColor3f(gridColour.x, gridColour.y, gridColour.z);
+        glColor3f(gridColour.red, gridColour.green, gridColour.blue);
         glBegin(GL_LINES);
         glVertex2f(xBoardStart + squareSide * x, yBoardStart);
         glVertex2f(xBoardStart + squareSide * x, yBoardStart + boardSide);
@@ -182,19 +184,12 @@ void GLFWUI::drawBoard()
                 continue;
             }
 
-            const float left = xBoardStart + squareSide * x;
-            const float right = xBoardStart + squareSide * (x + 1);
-            const float top = yBoardStart + squareSide * y;
-            const float bottom = yBoardStart + squareSide * (y + 1);
-            const ColourRGB colour = stoneToColour(stone);
+            const float centreX = xBoardStart + squareSide * (0.5f + x);
+            const float centreY = yBoardStart + squareSide * (0.5f + y);
+            const ColourRGBf colour = stoneToColour(stone);
+            const float radius = 0.4f * squareSide;
 
-            glColor3f(colour.x, colour.y, colour.z);
-            glBegin(GL_POLYGON);
-            glVertex2f(left, top);
-            glVertex2f(right, top);
-            glVertex2f(right, bottom);
-            glVertex2f(left, bottom);
-            glEnd();
+            drawStone({ centreX, centreY }, radius, colour);
         }
     }
 }
@@ -203,7 +198,7 @@ void GLFWUI::renderLoop()
 {
     while (!m_killRenderThread)
     {
-        glClearColor(boardColour.x, boardColour.y, boardColour.z, 1.0f);
+        glClearColor(boardColour.red, boardColour.green, boardColour.blue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (m_board)

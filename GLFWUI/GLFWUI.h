@@ -9,6 +9,26 @@
 
 struct GLFWwindow;
 
+struct Vector3f
+{
+    float x = 0.f;
+    float y = 0.f;
+    float z = 0.f;
+};
+
+struct ColourRGBf
+{
+    float red = 0.f;
+    float green = 0.f;
+    float blue = 0.f;
+};
+
+struct Vector2f
+{
+    float x = 0.f;
+    float y = 0.f;
+};
+
 class GLFWUI_DLL GLFWUI
 {
 public:
@@ -37,6 +57,7 @@ private:
     void renderLoop();
     void drawBoard();
     void setupDrawing();
+    void drawStone(const Vector2f &centre, float radius, const ColourRGBf &colour);
 
     GLFWwindow* m_window = nullptr;
     std::unique_ptr<boost::numeric::ublas::matrix<int>> m_board = nullptr;
