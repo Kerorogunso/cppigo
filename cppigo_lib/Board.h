@@ -12,6 +12,16 @@ enum stones {
     WHITE
 };
 
+enum class GobanError
+{
+    kSuccess,
+    kSelfAtari,
+    kInvalidStone,
+    kNotInRange,
+    kStoneAlreadyThere,
+    kKoRule
+};
+
 class CPPIGO_DLL Goban
 {
 public:
@@ -23,11 +33,11 @@ public:
     void operator=(const Goban& goban);
     const bool operator==(const Goban& goban);
 
-    void placeStone(int stone, int row, int column);
-    void placeStone(int stone, std::tuple<int, int> index);
+    GobanError placeStone(int stone, int row, int column);
+    GobanError placeStone(int stone, std::tuple<int, int> index);
     int getBoardSize();
     void getNeighbors(Group *neighbors, int row, int col);
-    void checkSelfAtari(int row, int col);
+    GobanError checkSelfAtari(int row, int col);
     Group returnNeighbors(int row, int col);
     void displayBoard();
     int getLiberties(Group neighbors);

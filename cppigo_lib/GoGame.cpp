@@ -29,7 +29,7 @@ GoGame::GoGame(Goban board, Player black, Player white, std::vector<Goban> board
     this->currentPlayer = black;
 }
 
-void GoGame::makeMove(int row, int col)
+GobanError GoGame::makeMove(int row, int col)
 {
     int stone = BLACK;
     if (currentPlayer == white)
@@ -37,46 +37,51 @@ void GoGame::makeMove(int row, int col)
         stone = WHITE;
     }
 
-    goban.placeStone(stone, row, col);
+    return goban.placeStone(stone, row, col);
 }
 
-void GoGame::play(const Vector2i &move)
+GobanError GoGame::play(const Vector2i &move)
 {
     int row = move.y;
     int col = move.x;
-    GoGame::play(row, col);
+    return GoGame::play(row, col);
 
 }
 
-void GoGame::play(int row, int col)
+GobanError GoGame::play(int row, int col)
 {
-    try
+    GobanError moveCheck = makeMove(row, col);
+    if (moveCheck != GobanError::kSuccess)
     {
-        makeMove(row, col);
-
-        Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
-
-        bool captured = false;
-        for (auto adjacent : adjacentStones)
-        {
-            captured = captured || checkForCapturedStones(std::get<0>(adjacent), std::get<1>(adjacent));
-        }
-
-        if (!captured)
-        {
-            goban.checkSelfAtari(row, col);
-        }
-        koCheck();
-        std::cout << std::endl;
-        boardHistory.push_back(this->goban);
-        switchActivePlayer();
-        std::cout << "Current player:" << currentPlayer.name << std::endl;
-        goban.displayBoard();
+        return moveCheck;
     }
-    catch (const std::logic_error &error)
+
+    Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
+
+    bool captured = false;
+    for (auto adjacent : adjacentStones)
     {
-        std::cout << error.what() << std::endl;
+        captured = captured || checkForCapturedStones(std::get<0>(adjacent), std::get<1>(adjacent));
     }
+
+    if (!captured)
+    {
+        GobanError selfAtariCheck = goban.checkSelfAtari(row, col);
+        if (selfAtariCheck != GobanError::kSuccess)
+        {
+            return selfAtariCheck;
+        }
+    }
+    
+    GobanError koRuleCheck = koCheck();
+    if (koRuleCheck != GobanError::kSuccess)
+    {
+        return koRuleCheck;
+    }
+    boardHistory.push_back(this->goban);
+    switchActivePlayer();
+    std::cout << "Current player:" << currentPlayer.name << std::endl;
+    goban.displayBoard();
 }
 
 void GoGame::switchActivePlayer()
@@ -134,13 +139,14 @@ Vector2i parseMove(const std::string &move)
     }
 }
 
-void GoGame::koCheck()
+GobanError GoGame::koCheck()
 {
     Goban currentState = goban;
 
     if (find(boardHistory.begin(), boardHistory.end(), currentState) != boardHistory.end())
     {
         this->goban = boardHistory[boardHistory.size() - 1];
-        throw std::logic_error("Ko rule.");
+        return GobanError::kKoRule;
     }
+    return GobanError::kSuccess;
 }

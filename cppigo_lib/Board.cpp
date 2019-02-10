@@ -25,31 +25,32 @@ Goban::Goban(int boardSize)
     m_board = matrix<int>(boardSize, boardSize, 0);
 }
 
-void Goban::placeStone(int stone, int row, int column)
+GobanError Goban::placeStone(int stone, int row, int column)
 {
     if (isInvalidStone(stone))
     {
-        throw std::invalid_argument("Stone is not valid.");
+        return GobanError::kInvalidStone;
     }
 
     if (isNotInRange(row, column))
     {
-        throw std::logic_error("Stone coordinates is not in range.");
+        return GobanError::kNotInRange;
     }
 
     if (m_board(row, column) != EMPTY && stone != EMPTY)
     {
-        throw std::logic_error("There is a stone already there.");
+        return GobanError::kStoneAlreadyThere;
     }
 
     m_board(row, column) = stone;
+    return GobanError::kSuccess;
 }
 
-void Goban::placeStone(int stone, std::tuple<int, int> index)
+GobanError Goban::placeStone(int stone, std::tuple<int, int> index)
 {
     int row = std::get<0>(index);
     int column = std::get<1>(index);
-    Goban::placeStone(stone, row, column);
+    return Goban::placeStone(stone, row, column);
 }
 
 int Goban::getBoardSize()
@@ -279,13 +280,14 @@ Group getAdjacentSquares(int row, int col, int boardSize)
     return adjacentSquares;
 }
 
-void Goban::checkSelfAtari(int row, int col)
+GobanError Goban::checkSelfAtari(int row, int col)
 {
     Group stoneGroup = returnNeighbors(row, col);
     int liberties = getLiberties(stoneGroup);
     if (liberties == 0)
     {
         placeStone(EMPTY, row, col);
-        throw std::logic_error("Invalid Move: Self Atari");
+        return GobanError::kSelfAtari;
     }
+    return GobanError::kSuccess;
 }

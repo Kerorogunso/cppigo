@@ -16,14 +16,14 @@ public:
     GoGame(Goban board, Player black, Player white);
     GoGame(Goban board, Player black, Player white, std::vector<Goban> boardHistory);
 
-    void makeMove(int row, int col);
-    void play(int row, int col);
-    void play(const Vector2i &move);
+    GobanError makeMove(int row, int col);
+    GobanError play(int row, int col);
+    GobanError play(const Vector2i &move);
 
 private:
     void switchActivePlayer();
     bool checkForCapturedStones(int row, int col);
-    void koCheck();
+    GobanError koCheck();
 };
 
 Vector2i CPPIGO_DLL parseMove(const std::string &move);
