@@ -8,6 +8,6 @@ using namespace std;
 
 int main()
 {
-	GoGame go;
-	go.startGame();
+    GoGame go;
+    go.startGame();
 }
