@@ -96,7 +96,7 @@ bool isInvalidStone(int stone)
 bool Goban::isNotInRange(int row, int column)
 {
     bool withinRow = (row >= 0) && (row < getBoardSize());
-    bool withinColumn = (column >= 0) && (row < getBoardSize());
+    bool withinColumn = (column >= 0) && (column < getBoardSize());
 
     if (withinRow && withinColumn)
     {

@@ -52,6 +52,8 @@ public:
     bool updateBoard(const GameState &newState);
 
 private:
+    Vector2i getNearestGridPoint(const Vector2d &point);
+    void drawStoneAtNearestGridPointToMouse();
     void handleGlobalMouseEvents();
     void renderLoop();
     void drawBoard();

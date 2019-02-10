@@ -170,6 +170,20 @@ void GLFWUI::drawStone(const Vector2d &centre, double radius, const ColourRGBf &
     glEnd();
 }
 
+Vector2i GLFWUI::getNearestGridPoint(const Vector2d &point)
+{
+    Vector2d boardPosition = screenCoordsToBoard(point);
+    boardPosition.x += .5;
+    boardPosition.y += .5;
+
+    const Vector2i boardPositionInteger{
+        static_cast<int>(boardPosition.x),
+        static_cast<int>(boardPosition.y)
+    };
+
+    return boardPositionInteger;
+}
+
 Vector2d GLFWUI::screenCoordsToBoard(const Vector2d &screenCoords)
 {
     if (m_boardSide == 0.f)
@@ -284,14 +298,7 @@ void GLFWUI::handleGlobalMouseEvents()
         {
         case MouseAction::kPress:
         {
-            Vector2d boardPosition = screenCoordsToBoard(event.position);
-            boardPosition.x += .5;
-            boardPosition.y += .5;
-
-            const Vector2i boardPositionInteger{
-                static_cast<int>(boardPosition.x),
-                static_cast<int>(boardPosition.y)
-            };
+            const Vector2i boardPositionInteger = getNearestGridPoint(event.position);
 
             if (boardPositionInteger.x >= 0 && boardPositionInteger.x < m_boardSize.width &&
                 boardPositionInteger.y >= 0 && boardPositionInteger.y < m_boardSize.height)
@@ -309,6 +316,21 @@ void GLFWUI::handleGlobalMouseEvents()
     }
 }
 
+void GLFWUI::drawStoneAtNearestGridPointToMouse()
+{
+    const Vector2i boardPositionInteger = getNearestGridPoint(gLastMousePosition);
+
+    const int boardX = boardPositionInteger.x;
+    const int boardY = boardPositionInteger.y;
+    if (boardX >= 0 && boardX < m_boardSize.width &&
+        boardY >= 0 && boardY < m_boardSize.height)
+    {
+        const double radius = (m_boardSide / m_boardSize.width) * m_options.stoneDiameterAsFractionOfGridCell * 0.5f;
+        const Vector2d posiion = boardCoordsToScreen({ static_cast<double>(boardX), static_cast<double>(boardY) });
+        drawStone(posiion, radius, m_gameState.nextColour);
+    }
+}
+
 void GLFWUI::renderLoop()
 {
     while (!m_killRenderThread)
@@ -319,10 +341,8 @@ void GLFWUI::renderLoop()
 
         if (m_gameState.board)
         {
-            const double radius = (m_boardSide / m_boardSize.width) * m_options.stoneDiameterAsFractionOfGridCell * 0.5f;
-            drawStone(gLastMousePosition, radius, m_gameState.nextColour);
-
             drawBoard();
+            drawStoneAtNearestGridPointToMouse();
         }
 
         glfwPollEvents();
@@ -334,6 +354,6 @@ void GLFWUI::renderLoop()
 
         glFinish();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
