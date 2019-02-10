@@ -50,9 +50,9 @@ float Player::getKomi()
 }
 bool Player::operator==(const Player& otherPlayer)
 {
-	if (this->name != otherPlayer.name || this->color != otherPlayer.color)
-	{
-		return false;
-	}
-	return true;
+    if (this->name != otherPlayer.name || this->color != otherPlayer.color)
+    {
+        return false;
+    }
+    return true;
 }

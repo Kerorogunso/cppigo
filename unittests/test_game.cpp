@@ -8,7 +8,7 @@ TEST(GoGame, SelfAtari)
 
 TEST(GoGame, KoRule)
 {
-	
+    
 }
 
 TEST(GoGame, Play)
