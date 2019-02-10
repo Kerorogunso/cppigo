@@ -3,6 +3,7 @@
 #include <random>
 #include <chrono>
 #include <thread>
+#include "cppigo_lib/GoGame.h"
 #include "GLFWUI/GLFWUI.h"
 
 TEST(GLFWUI, checkUIStarts)

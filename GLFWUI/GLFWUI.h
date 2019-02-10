@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GLFWUIExports.h"
+#include "Utilities/Colours.h"
 #include "cppigo_lib/Board.h"
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -13,6 +14,13 @@ struct GLFWwindow;
 
 constexpr double kPi = boost::math::constants::pi<double>();
 
+struct GameState
+{
+    const boost::numeric::ublas::matrix<int> *board = nullptr;
+    ColourRGBf nextColour;
+    std::string nextPlayer;
+};
+
 class GLFWUI_DLL GLFWUI
 {
 public:
@@ -23,7 +31,8 @@ public:
         int windowWidth = 400;
         int windowHeight = 300;
 
-        float boardBorderFraction = 0.01f;
+        double boardBorderFraction = 0.01f;
+        double stoneDiameterAsFractionOfGridCell = 0.8f;
         
         ColourRGBf boardColour{ 219.f / 255.f, 158.f / 255.f, 46.f / 255.f };
         ColourRGBf gridColour{ 0.f, 0.f, 0.f };
@@ -40,9 +49,11 @@ public:
     // shutdown the UI
     bool quitUI();
 
-    bool updateBoard(const boost::numeric::ublas::matrix<int> &board);
+    bool updateBoard(const GameState &newState);
 
 private:
+    Vector2i getNearestGridPoint(const Vector2d &point);
+    void drawStoneAtNearestGridPointToMouse();
     void handleGlobalMouseEvents();
     void renderLoop();
     void drawBoard();
@@ -50,15 +61,15 @@ private:
     void drawVerticalGridlines();
     void setupDrawing();
     void updateForNewScreenSize();
-    void drawStone(const Vector2f &centre, float radius, const ColourRGBf &colour);
+    void drawStone(const Vector2d &centre, double radius, const ColourRGBf &colour);
     ColourRGBf stoneToColour(stones stone);
 
-    Vector2f screenCoordsToBoard(const Vector2f &screenCoords);
-    Vector2f boardCoordsToScreen(const Vector2f &boardCoords);
+    Vector2d screenCoordsToBoard(const Vector2d &screenCoords);
+    Vector2d boardCoordsToScreen(const Vector2d &boardCoords);
 
-    Vector2f m_boardStart;
-    float m_boardSide = 0.f;
-    float m_squareSide = 0.f;
+    Vector2d m_boardStart;
+    double m_boardSide = 0.f;
+    double m_squareSide = 0.f;
 
     struct BoardSize
     {
@@ -69,7 +80,8 @@ private:
     std::vector<std::function<void(Vector2i)>> m_boardPositionClickedCallbacks;
 
     GLFWwindow* m_window = nullptr;
-    std::unique_ptr<boost::numeric::ublas::matrix<int>> m_board = nullptr;
+
+    GameState m_gameState;
     UIOptions m_options;
     bool m_setup = false;
     bool m_killRenderThread;

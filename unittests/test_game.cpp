@@ -9,8 +9,8 @@ TEST(GoGame, SelfAtari)
 TEST(GoGame, KoRule)
 {
     Goban board;
-    Player black("a", "black");
-    Player white("b", "white");
+    Player black("a", kBlack);
+    Player white("b", kWhite);
     //GoGame game(board, black, white);
 }
 
