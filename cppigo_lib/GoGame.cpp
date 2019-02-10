@@ -1,5 +1,7 @@
+#include "stdafx.h"
+
 #include <sstream>
-#include "game.h"
+#include "GoGame.h"
 
 GoGame::GoGame()
 {
@@ -51,15 +53,13 @@ void GoGame::play(int row, int col)
     try
     {
         makeMove(row, col);
-        cout << this->goban.getLiberties({ make_tuple(1,1) });
 
         Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
-        
+
         bool captured = false;
         for (auto adjacent : adjacentStones)
         {
-            cout << get<0>(adjacent) << "," << get<1>(adjacent) << endl;
-            captured = captured || checkForCapturedStones(get<0>(adjacent), get<1>(adjacent));
+            captured = captured || checkForCapturedStones(std::get<0>(adjacent), std::get<1>(adjacent));
         }
 
         if (!captured)
@@ -67,15 +67,15 @@ void GoGame::play(int row, int col)
             goban.checkSelfAtari(row, col);
         }
         koCheck();
-        cout << endl;
+        std::cout << std::endl;
         boardHistory.push_back(this->goban);
         switchActivePlayer();
-        cout << "Current player:" << currentPlayer.color << endl;
+        std::cout << "Current player:" << currentPlayer.color << std::endl;
         goban.displayBoard();
     }
-    catch (const logic_error &error)
+    catch (const std::logic_error &error)
     {
-        cout << error.what() << endl;
+        std::cout << error.what() << std::endl;
     }
 }
 
@@ -94,18 +94,18 @@ void GoGame::switchActivePlayer()
 bool GoGame::checkForCapturedStones(int row, int col)
 {
     Group stoneGroup = goban.returnNeighbors(row, col);
-    
+
     int color = BLACK;
     if (currentPlayer.color == "black")
     {
         color = WHITE;
     }
-    
+
     if (goban.getLiberties(stoneGroup) == 0)
     {
         for (auto coordinates : stoneGroup)
         {
-            if (goban.board()(get<0>(coordinates), get<1>(coordinates)) == color) 
+            if (goban.board()(std::get<0>(coordinates), std::get<1>(coordinates)) == color)
             {
                 goban.placeStone(EMPTY, coordinates);
             }
@@ -116,9 +116,9 @@ bool GoGame::checkForCapturedStones(int row, int col)
     return false;
 }
 
-Vector2i parseMove(const string &move)
+Vector2i parseMove(const std::string &move)
 {
-    stringstream stream(move);
+    std::stringstream stream(move);
     std::vector<int> coordinates;
     int n;
     try {
@@ -129,18 +129,18 @@ Vector2i parseMove(const string &move)
 
         return Vector2i{ coordinates[0], coordinates[1] };
     }
-    catch(const out_of_range& cor) {
-        cout << "Could not parse move into tuple of ints" << endl;
+    catch (const std::out_of_range& cor) {
+        std::cout << "Could not parse move into tuple of ints" << std::endl;
     }
 }
 
 void GoGame::koCheck()
 {
     Goban currentState = goban;
-    
+
     if (find(boardHistory.begin(), boardHistory.end(), currentState) != boardHistory.end())
     {
         this->goban = boardHistory[boardHistory.size() - 1];
-        throw logic_error("Ko rule.");
+        throw std::logic_error("Ko rule.");
     }
-}    
+}

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <iostream>
 #include <stdexcept>
 
@@ -11,7 +13,7 @@ Player::Player()
     color = "black";
 };
 
-Player::Player(const string name)
+Player::Player(const string& name)
 {
     this->name = name;
     this->color = "black";
@@ -23,7 +25,7 @@ Player::Player(const Player& player)
     this->color = player.color;
 }
 
-Player::Player(const string name, const string color)
+Player::Player(const string& name, const string& color)
 {
     this->name = name;
     this->color = color;
@@ -39,7 +41,7 @@ float Player::getKomi()
     if (color == "black")
     {
         return 0;
-    } 
+    }
     else if (color == "white")
     {
         return 7.5;

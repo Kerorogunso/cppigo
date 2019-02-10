@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GLFWUIExports.h"
-#include "board.h"
+#include "cppigo_lib/Board.h"
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/math/constants/constants.hpp>
 #include "Utilities/VectorT.h"

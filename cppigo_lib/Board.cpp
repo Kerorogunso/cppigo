@@ -1,9 +1,11 @@
+#include "stdafx.h"
+
 #include <map>
 #include <stdexcept>
 #include <queue>
 #include <iostream>
 
-#include "board.h"
+#include "Board.h"
 
 using namespace boost::numeric::ublas;
 
@@ -14,7 +16,7 @@ Goban::Goban()
 }
 
 Goban::Goban(int boardSize)
-{    
+{
     if (find(validBoardSizes.begin(), validBoardSizes.end(), boardSize) == validBoardSizes.end())
     {
         throw std::invalid_argument("Board size must be 9, 13 or 19.");
@@ -24,7 +26,7 @@ Goban::Goban(int boardSize)
 }
 
 void Goban::placeStone(int stone, int row, int column)
-{    
+{
     if (isInvalidStone(stone))
     {
         throw std::invalid_argument("Stone is not valid.");
@@ -39,7 +41,7 @@ void Goban::placeStone(int stone, int row, int column)
     {
         throw std::logic_error("There is a stone already there.");
     }
-    
+
     m_board(row, column) = stone;
 }
 
@@ -108,7 +110,7 @@ const matrix<int> &Goban::board() const
     return m_board;
 }
 
- matrix<int> *Goban::board_mutable()
+matrix<int> *Goban::board_mutable()
 {
     return &m_board;
 }
@@ -149,7 +151,7 @@ void Goban::displayBoard()
     const std::string BOX_BOTTOM_RIGHT = "+";
     const std::string BOX_BOTTOM = "+";
     const std::string BOX_CENTRE = "+";
-    
+
     std::string gridChar;
 
     for (unsigned int i = 0; i < m_board.size1(); ++i)
@@ -195,7 +197,7 @@ void Goban::displayBoard()
                     gridChar = BOX_RIGHT;
                 else
                     gridChar = BOX_CENTRE;
-                
+
             }
             std::cout << gridChar;
         }
@@ -205,7 +207,7 @@ void Goban::displayBoard()
 
 int Goban::getLiberties(Group neighbors)
 {
-    
+
     int numLiberties = 0;
     Group libertyCoords = {};
     std::tuple<int, int> stoneCoords = neighbors[0];
@@ -214,7 +216,7 @@ int Goban::getLiberties(Group neighbors)
     {
         return 1;
     }
-    
+
     for (auto coordinates : neighbors)
     {
         int neighborRow = std::get<0>(coordinates);
@@ -222,8 +224,8 @@ int Goban::getLiberties(Group neighbors)
 
         Group adjacentSquares = getAdjacentSquares(neighborRow, neighborColumn, getBoardSize());
 
-        for (auto adjacent: adjacentSquares)
-        {    
+        for (auto adjacent : adjacentSquares)
+        {
             int row = std::get<0>(adjacent);
             int col = std::get<1>(adjacent);
 
@@ -246,12 +248,12 @@ bool Goban::isEmpty(std::tuple<int, int> coordinates)
 }
 
 void Goban::getNeighbors(Group *neighbors, int row, int col)
-{    
-    
+{
+
     Group potentialNeighbors = getAdjacentSquares(row, col, getBoardSize());
-    
+
     for (auto neighbor : potentialNeighbors)
-    {    
+    {
         int neighborRow = std::get<0>(neighbor);
         int neighborCol = std::get<1>(neighbor);
 
