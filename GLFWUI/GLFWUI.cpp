@@ -24,6 +24,7 @@ enum class MouseAction
 
 struct MouseEvent
 {
+    Vector2f position;
     MouseButton button;
     MouseAction action;
 };
@@ -77,6 +78,7 @@ void mouseButtonCallback(GLFWwindow *window, int mouseButton, int action, int mo
     MouseEvent mouseEvent;
     mouseEvent.button = static_cast<MouseButton>(mouseButton);
     mouseEvent.action = static_cast<MouseAction>(action);
+    mouseEvent.position = gLastMousePosition;
     gMouseEvents.push(std::move(mouseEvent));
 }
 
@@ -177,14 +179,27 @@ void GLFWUI::drawStone(const Vector2f &centre, float radius, const ColourRGBf &c
 
 Vector2f GLFWUI::screenCoordsToBoard(const Vector2f &screenCoords)
 {
-    return {};
+    if (m_boardSide == 0.f)
+    {
+        return {};
+    }
+
+    Vector2f boardCoords;
+    boardCoords.x = (screenCoords.x - m_boardStart.x) * (m_boardSize.width / m_boardSide);
+    boardCoords.y = (screenCoords.y - m_boardStart.y) * (m_boardSize.height / m_boardSide);
+    return boardCoords;
 }
 
 Vector2f GLFWUI::boardCoordsToScreen(const Vector2f &boardCoords)
 {
+    if (m_boardSize.width == 0.f || m_boardSize.height == 0.f)
+    {
+        return {};
+    }
+
     Vector2f screenCoords;
     screenCoords.x = m_boardStart.x + (m_boardSide / m_boardSize.width) * boardCoords.x;
-    screenCoords.y = m_boardStart.y + (m_boardSide / m_boardSize.width) * boardCoords.y;
+    screenCoords.y = m_boardStart.y + (m_boardSide / m_boardSize.height) * boardCoords.y;
     return screenCoords;
 }
 
@@ -213,7 +228,7 @@ void GLFWUI::drawVerticalGridlines()
     }
 }
 
-void GLFWUI::drawBoard()
+void GLFWUI::updateForNewScreenSize()
 {
     m_boardSize.height = m_board->size1();
     m_boardSize.width = m_board->size2();
@@ -232,7 +247,11 @@ void GLFWUI::drawBoard()
     m_boardStart.x = .5f * (static_cast<float>(windowWidth) - m_boardSide);
     m_boardStart.y = .5f * (static_cast<float>(windowHeight) - m_boardSide);
     m_squareSide = m_boardSide / m_boardSize.width;
+}
 
+void GLFWUI::drawBoard()
+{
+    updateForNewScreenSize();
     drawHorizontalGridlines();
     drawVerticalGridlines();
 
@@ -258,6 +277,11 @@ void GLFWUI::drawBoard()
     }
 }
 
+void GLFWUI::addBoardPositionClickedCallback(std::function<void(Vector2i)> callback)
+{
+    m_boardPositionClickedCallbacks.push_back(callback);
+}
+
 void GLFWUI::handleGlobalMouseEvents()
 {
     while (gMouseEvents.size())
@@ -268,8 +292,23 @@ void GLFWUI::handleGlobalMouseEvents()
         switch (event.action)
         {
         case MouseAction::kPress:
-            // pass to game
+        {
+            const Vector2f boardPosition = screenCoordsToBoard(event.position);
+            const Vector2i boardPositionInteger{
+                static_cast<int>(boardPosition.x),
+                static_cast<int>(boardPosition.y)
+            };
+
+            if (boardPositionInteger.x >= 0 && boardPositionInteger.x < m_boardSize.width &&
+                boardPositionInteger.y >= 0 && boardPositionInteger.y < m_boardSize.height)
+            {
+                for (auto callback : m_boardPositionClickedCallbacks)
+                {
+                    callback(boardPositionInteger);
+                }
+            }
             break;
+        }
         case MouseAction::kRelease:
             break;
         }

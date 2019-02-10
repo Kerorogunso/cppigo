@@ -31,6 +31,8 @@ public:
 
     GLFWUI();
     ~GLFWUI();
+
+    void addBoardPositionClickedCallback(std::function<void(Vector2i)> callback);
     
     // creates window and starts rendering in a separate thread (non-blocking)
     bool setupUI(const UIOptions &options);
@@ -47,6 +49,7 @@ private:
     void drawHorizontalGridlines();
     void drawVerticalGridlines();
     void setupDrawing();
+    void updateForNewScreenSize();
     void drawStone(const Vector2f &centre, float radius, const ColourRGBf &colour);
     ColourRGBf stoneToColour(stones stone);
 
@@ -62,6 +65,8 @@ private:
         int width = 1;
         int height = 1;
     } m_boardSize;
+
+    std::vector<std::function<void(Vector2i)>> m_boardPositionClickedCallbacks;
 
     GLFWwindow* m_window = nullptr;
     std::unique_ptr<boost::numeric::ublas::matrix<int>> m_board = nullptr;
