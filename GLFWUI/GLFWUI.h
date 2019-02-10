@@ -7,6 +7,8 @@
 #include <memory>
 #include <thread>
 
+struct GLFWwindow;
+
 class GLFWUI_DLL GLFWUI
 {
 public:
@@ -31,10 +33,12 @@ public:
 
 private:
     void renderLoop();
+    void drawBoard();
 
+    GLFWwindow* m_window = nullptr;
     std::unique_ptr<boost::numeric::ublas::matrix<int>> m_board = nullptr;
     UIOptions m_options;
     bool m_setup = false;
     bool m_killRenderThread;
-    std::unique_ptr<std::future<void>> m_renderThread = nullptr;
+    std::unique_ptr<std::future<bool>> m_renderThread = nullptr;
 };
