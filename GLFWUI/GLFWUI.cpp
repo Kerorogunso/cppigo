@@ -42,6 +42,17 @@ GLFWUI::~GLFWUI()
     quitUI();
 }
 
+void window_size_callback(GLFWwindow *window, int width, int height)
+{
+
+}
+
+void set_frame_size_callback(GLFWwindow *window, int width, int height)
+{
+
+}
+
+
 bool GLFWUI::setupUI(const UIOptions &options)
 {
     m_options = options;
@@ -61,6 +72,8 @@ bool GLFWUI::setupUI(const UIOptions &options)
             return false;
         }
 
+        glfwSetFramebufferSizeCallback(m_window, set_frame_size_callback);
+        glfwSetWindowSizeCallback(m_window, window_size_callback);
         glfwMakeContextCurrent(m_window);
 
         setupDrawing();
@@ -121,14 +134,22 @@ void GLFWUI::drawBoard()
     const int boardWidth = m_board->size1();
     const int boardHeight = m_board->size2();
 
+    int windowWidth = 0;
+    int windowHeight = 0;
+    glfwGetFramebufferSize(m_window, &windowWidth, &windowHeight);
+    m_options.windowHeight = windowHeight;
+    m_options.windowWidth = windowWidth;
+
+    setupDrawing();
+
     const int boardHeightNoBorder = m_board->size1();
     const int boardWidthNoBorder = m_board->size2();
 
-    const int boardSideNoBorder = std::min(m_options.windowWidth, m_options.windowHeight);
+    const int boardSideNoBorder = std::min(windowWidth, windowHeight);
     const float borderThickness = m_options.boardBorderFraction * boardSideNoBorder;
     const float boardSide = static_cast<float>(boardSideNoBorder) - 2.f * borderThickness;
-    const float xBoardStart = .5f * (static_cast<float>(m_options.windowWidth) - boardSide);
-    const float yBoardStart = .5f * (static_cast<float>(m_options.windowHeight) - boardSide);
+    const float xBoardStart = .5f * (static_cast<float>(windowWidth) - boardSide);
+    const float yBoardStart = .5f * (static_cast<float>(windowHeight) - boardSide);
 
     const float squareSide = boardSide / boardWidth;
 
