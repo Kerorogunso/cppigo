@@ -64,6 +64,7 @@ bool GLFWUI::setupUI(const UIOptions &options)
             return false;
         }
 
+        glfwWindowHint(GLFW_SAMPLES, 4);
         glfwSetFramebufferSizeCallback(m_window, set_frame_size_callback);
         glfwSetWindowSizeCallback(m_window, window_size_callback);
         glfwMakeContextCurrent(m_window);
