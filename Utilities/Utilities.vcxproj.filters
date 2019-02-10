@@ -10,9 +10,13 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="VectorT.h" />
     <ClInclude Include="RectangleT.h" />
+    <ClInclude Include="Colours.h" />
+    <ClInclude Include="utilities_exports.h" />
+    <ClInclude Include="Stones.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="Colours.cpp" />
   </ItemGroup>
 </Project>

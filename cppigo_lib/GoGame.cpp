@@ -5,8 +5,8 @@
 
 GoGame::GoGame()
 {
-    black = Player("Player 1", "black");
-    white = Player("Player 2", "white");
+    black = Player("Player 1", kBlack);
+    white = Player("Player 2", kWhite);
     currentPlayer = black;
     boardHistory.push_back(goban);
 };
@@ -70,7 +70,7 @@ void GoGame::play(int row, int col)
         std::cout << std::endl;
         boardHistory.push_back(this->goban);
         switchActivePlayer();
-        std::cout << "Current player:" << currentPlayer.color << std::endl;
+        std::cout << "Current player:" << currentPlayer.name << std::endl;
         goban.displayBoard();
     }
     catch (const std::logic_error &error)
@@ -96,7 +96,7 @@ bool GoGame::checkForCapturedStones(int row, int col)
     Group stoneGroup = goban.returnNeighbors(row, col);
 
     int color = BLACK;
-    if (currentPlayer.color == "black")
+    if (currentPlayer.color == kBlack)
     {
         color = WHITE;
     }

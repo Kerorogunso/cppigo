@@ -6,8 +6,8 @@
 
 TEST(Player, CheckKomi)
 {
-    Player black("Player 1", "black");
-    Player white("Player 2", "white");
+    Player black("Player 1", kBlack);
+    Player white("Player 2", kWhite);
 
     float blackKomi = black.getKomi();
     float whiteKomi = white.getKomi(); 

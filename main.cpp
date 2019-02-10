@@ -20,12 +20,21 @@ int main()
     ui.addBoardPositionClickedCallback([&go, &ui](Vector2i position)
     {
         go.play(position);
-        ui.updateBoard(go.goban.board());
+
+        GameState state;
+        state.board = &go.goban.board();
+        state.nextColour = go.currentPlayer.color;
+        state.nextPlayer = go.currentPlayer.name;
+        ui.updateBoard(state);
     });
 
     while (true)
     {
-        ui.updateBoard(go.goban.board());
+        GameState state;
+        state.board = &go.goban.board();
+        state.nextColour = go.currentPlayer.color;
+        state.nextPlayer = go.currentPlayer.name;
+        ui.updateBoard(state);
 
         std::string move;
         cout << "What's your move:" << endl;

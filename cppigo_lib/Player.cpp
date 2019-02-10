@@ -10,13 +10,13 @@ using namespace std;
 Player::Player()
 {
     name = "Player 1";
-    color = "black";
+    color = kBlack;
 };
 
 Player::Player(const string& name)
 {
     this->name = name;
-    this->color = "black";
+    this->color = kBlack;
 };
 
 Player::Player(const Player& player)
@@ -25,7 +25,7 @@ Player::Player(const Player& player)
     this->color = player.color;
 }
 
-Player::Player(const string& name, const string& color)
+Player::Player(const string& name, const ColourRGBf& color)
 {
     this->name = name;
     this->color = color;
@@ -38,11 +38,11 @@ void Player::printName()
 
 float Player::getKomi()
 {
-    if (color == "black")
+    if (color == kBlack)
     {
         return 0;
     }
-    else if (color == "white")
+    else if (color == kWhite)
     {
         return 7.5;
     }
