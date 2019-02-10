@@ -12,6 +12,28 @@ using namespace boost::numeric::ublas;
 constexpr ColourRGBf boardColour{ 219.f / 255.f, 158.f / 255.f, 46.f / 255.f };
 constexpr ColourRGBf gridColour{ 0.f, 0.f, 0.f };
 
+enum class MouseButton
+{
+    kLeft = GLFW_MOUSE_BUTTON_LEFT,
+    kRight = GLFW_MOUSE_BUTTON_RIGHT
+};
+
+enum class MouseAction
+{
+    kPress = GLFW_PRESS,
+    kRelease = GLFW_RELEASE
+};
+
+struct MouseEvent
+{
+    MouseButton button;
+    MouseAction action;
+};
+
+// global things to interact with GLFW (yuck!)
+Vector2f gLastMousePosition;
+std::queue<MouseEvent> gMouseEvents;
+
 ColourRGBf stoneToColour(stones stone)
 {
     switch (stone)
@@ -44,6 +66,19 @@ void set_frame_size_callback(GLFWwindow *window, int width, int height)
 
 }
 
+void mouseMoveCallback(GLFWwindow *window, double xPos, double yPos)
+{
+    gLastMousePosition.x = xPos;
+    gLastMousePosition.y = yPos;
+}
+
+void mouseButtonCallback(GLFWwindow *window, int mouseButton, int action, int modifierKeys)
+{
+    MouseEvent mouseEvent;
+    mouseEvent.button = static_cast<MouseButton>(mouseButton);
+    mouseEvent.action = static_cast<MouseAction>(action);
+    gMouseEvents.push(std::move(mouseEvent));
+}
 
 bool GLFWUI::setupUI(const UIOptions &options)
 {
@@ -65,6 +100,8 @@ bool GLFWUI::setupUI(const UIOptions &options)
         }
 
         glfwWindowHint(GLFW_SAMPLES, 4);
+        glfwSetCursorPosCallback(m_window, mouseMoveCallback);
+        glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
         glfwSetFramebufferSizeCallback(m_window, set_frame_size_callback);
         glfwSetWindowSizeCallback(m_window, window_size_callback);
         glfwMakeContextCurrent(m_window);
@@ -195,6 +232,24 @@ void GLFWUI::drawBoard()
     }
 }
 
+void GLFWUI::handleGlobalMouseEvents()
+{
+    while (gMouseEvents.size())
+    {
+        const MouseEvent event = gMouseEvents.front();
+        gMouseEvents.pop();
+
+        switch (event.action)
+        {
+        case MouseAction::kPress:
+            // pass to game
+            break;
+        case MouseAction::kRelease:
+            break;
+        }
+    }
+}
+
 void GLFWUI::renderLoop()
 {
     while (!m_killRenderThread)
@@ -202,12 +257,15 @@ void GLFWUI::renderLoop()
         glClearColor(boardColour.red, boardColour.green, boardColour.blue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        drawStone(gLastMousePosition, 5.f, { 1.f, 0.f, 0.f });
+
         if (m_board)
         {
             drawBoard();
         }
 
         glfwPollEvents();
+        handleGlobalMouseEvents();
 
         m_killRenderThread = glfwWindowShouldClose(m_window);
 
