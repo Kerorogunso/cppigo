@@ -8,8 +8,9 @@
 #include "glfw3native.h"
 #include <iostream>
 
-GLFWUI::GLFWUI(Goban *board)
-    : m_board(board)
+using namespace boost::numeric::ublas;
+
+GLFWUI::GLFWUI()
 {
 }
 
@@ -70,10 +71,18 @@ bool GLFWUI::quitUI()
     return true;
 }
 
+bool GLFWUI::updateBoard(const boost::numeric::ublas::matrix<int> &board)
+{
+    *m_board = board;
+    return true;
+}
+
 void GLFWUI::renderLoop()
 {
     while (!m_killRenderThread)
     {
+        //const matrix<int> &board = m_board->board();
+
         glfwPollEvents();
     }
 }

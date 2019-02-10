@@ -3,10 +3,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <queue>
 
-using namespace boost::numeric::ublas;
-using namespace std;
-
-using Group = std::vector<tuple<int, int>>;
+using Group = std::vector<std::tuple<int, int>>;
 
 enum stones {
     EMPTY,
@@ -26,21 +23,21 @@ class Goban
         const bool operator==(const Goban& goban);
 
         void placeStone(int stone, int row, int column);
-        void placeStone(int stone, tuple<int, int> index);
+        void placeStone(int stone, std::tuple<int, int> index);
         int getBoardSize();
         void getNeighbors(Group *neighbors, int row, int col);
         void checkSelfAtari(int row, int col);
         Group returnNeighbors(int row, int col);
         void displayBoard();
         int getLiberties(Group neighbors);
-        bool isEmpty(tuple<int, int> coordinates);
-        const matrix<int> &board() const;
-        matrix<int> *board_mutable();
+        bool isEmpty(std::tuple<int, int> coordinates);
+        const boost::numeric::ublas::matrix<int> &board() const;
+        boost::numeric::ublas::matrix<int> *board_mutable();
     
     private:
         const std::vector<int> validBoardSizes = { 9, 13, 19 };
         bool isNotInRange(int row, int column);
-        matrix<int> m_board;
+        boost::numeric::ublas::matrix<int> m_board;
 };
 
 bool isInvalidStone(int stone);

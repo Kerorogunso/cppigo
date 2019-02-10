@@ -5,7 +5,6 @@
 
 #include "board.h"
 
-using namespace std;
 using namespace boost::numeric::ublas;
 
 Goban::Goban()
@@ -18,7 +17,7 @@ Goban::Goban(int boardSize)
 {    
     if (find(validBoardSizes.begin(), validBoardSizes.end(), boardSize) == validBoardSizes.end())
     {
-        throw invalid_argument("Board size must be 9, 13 or 19.");
+        throw std::invalid_argument("Board size must be 9, 13 or 19.");
     }
     this->boardSize = boardSize;
     m_board = matrix<int>(boardSize, boardSize, 0);
@@ -28,26 +27,26 @@ void Goban::placeStone(int stone, int row, int column)
 {    
     if (isInvalidStone(stone))
     {
-        throw invalid_argument("Stone is not valid.");
+        throw std::invalid_argument("Stone is not valid.");
     }
 
     if (isNotInRange(row, column))
     {
-        throw logic_error("Stone coordinates is not in range.");
+        throw std::logic_error("Stone coordinates is not in range.");
     }
 
     if (m_board(row, column) != EMPTY && stone != EMPTY)
     {
-        throw logic_error("There is a stone already there.");
+        throw std::logic_error("There is a stone already there.");
     }
     
     m_board(row, column) = stone;
 }
 
-void Goban::placeStone(int stone, tuple<int, int> index)
+void Goban::placeStone(int stone, std::tuple<int, int> index)
 {
-    int row = get<0>(index);
-    int column = get<1>(index);
+    int row = std::get<0>(index);
+    int column = std::get<1>(index);
     Goban::placeStone(stone, row, column);
 }
 
@@ -77,7 +76,7 @@ const bool Goban::operator==(const Goban& goban)
     return true;
 }
 
-bool notInGroup(Group &groupElements, tuple<int, int> stoneIndex)
+bool notInGroup(Group &groupElements, std::tuple<int, int> stoneIndex)
 {
     const auto position = find(groupElements.begin(), groupElements.end(), stoneIndex);
     if (position == groupElements.end())
@@ -125,33 +124,33 @@ Group Goban::returnNeighbors(int row, int col)
 
 void Goban::displayBoard()
 {
-    //const string BLACK_UNICODE = "\u25CF";
-    //const string WHITE_UNICODE = "\u25CB";
+    //const std::string BLACK_UNICODE = "\u25CF";
+    //const std::string WHITE_UNICODE = "\u25CB";
 
-    //const string BOX_TOP_LEFT = "\u250E";
-    //const string BOX_TOP_RIGHT = "\u2513";
-    //const string BOX_TOP = "\u2530";
-    //const string BOX_LEFT = "\u2523";
-    //const string BOX_RIGHT = "\u252B";
-    //const string BOX_BOTTOM_LEFT = "\u2516";
-    //const string BOX_BOTTOM_RIGHT = "\u251B";
-    //const string BOX_BOTTOM = "\u253A";
-    //const string BOX_CENTRE = "\u254B";
+    //const std::string BOX_TOP_LEFT = "\u250E";
+    //const std::string BOX_TOP_RIGHT = "\u2513";
+    //const std::string BOX_TOP = "\u2530";
+    //const std::string BOX_LEFT = "\u2523";
+    //const std::string BOX_RIGHT = "\u252B";
+    //const std::string BOX_BOTTOM_LEFT = "\u2516";
+    //const std::string BOX_BOTTOM_RIGHT = "\u251B";
+    //const std::string BOX_BOTTOM = "\u253A";
+    //const std::string BOX_CENTRE = "\u254B";
 
-    const string BLACK_UNICODE = "B";
-    const string WHITE_UNICODE = "W";
+    const std::string BLACK_UNICODE = "B";
+    const std::string WHITE_UNICODE = "W";
 
-    const string BOX_TOP_LEFT = "+";
-    const string BOX_TOP_RIGHT = "+";
-    const string BOX_TOP = "+";
-    const string BOX_LEFT = "+";
-    const string BOX_RIGHT = "+";
-    const string BOX_BOTTOM_LEFT = "+";
-    const string BOX_BOTTOM_RIGHT = "+";
-    const string BOX_BOTTOM = "+";
-    const string BOX_CENTRE = "+";
+    const std::string BOX_TOP_LEFT = "+";
+    const std::string BOX_TOP_RIGHT = "+";
+    const std::string BOX_TOP = "+";
+    const std::string BOX_LEFT = "+";
+    const std::string BOX_RIGHT = "+";
+    const std::string BOX_BOTTOM_LEFT = "+";
+    const std::string BOX_BOTTOM_RIGHT = "+";
+    const std::string BOX_BOTTOM = "+";
+    const std::string BOX_CENTRE = "+";
     
-    string gridChar;
+    std::string gridChar;
 
     for (unsigned int i = 0; i < m_board.size1(); ++i)
     {
@@ -198,9 +197,9 @@ void Goban::displayBoard()
                     gridChar = BOX_CENTRE;
                 
             }
-            cout << gridChar;
+            std::cout << gridChar;
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 }
 
@@ -209,24 +208,24 @@ int Goban::getLiberties(Group neighbors)
     
     int numLiberties = 0;
     Group libertyCoords = {};
-    tuple<int, int> stoneCoords = neighbors[0];
+    std::tuple<int, int> stoneCoords = neighbors[0];
 
-    if (m_board(get<0>(stoneCoords), get<1>(stoneCoords)) == EMPTY)
+    if (m_board(std::get<0>(stoneCoords), std::get<1>(stoneCoords)) == EMPTY)
     {
         return 1;
     }
     
     for (auto coordinates : neighbors)
     {
-        int neighborRow = get<0>(coordinates);
-        int neighborColumn = get<1>(coordinates);
+        int neighborRow = std::get<0>(coordinates);
+        int neighborColumn = std::get<1>(coordinates);
 
         Group adjacentSquares = getAdjacentSquares(neighborRow, neighborColumn, getBoardSize());
 
         for (auto adjacent: adjacentSquares)
         {    
-            int row = get<0>(adjacent);
-            int col = get<1>(adjacent);
+            int row = std::get<0>(adjacent);
+            int col = std::get<1>(adjacent);
 
             if (isEmpty(adjacent) && find(libertyCoords.begin(), libertyCoords.end(), adjacent) == libertyCoords.end())
             {
@@ -239,10 +238,10 @@ int Goban::getLiberties(Group neighbors)
     return numLiberties;
 }
 
-bool Goban::isEmpty(tuple<int, int> coordinates)
+bool Goban::isEmpty(std::tuple<int, int> coordinates)
 {
-    int row = get<0>(coordinates);
-    int col = get<1>(coordinates);
+    int row = std::get<0>(coordinates);
+    int col = std::get<1>(coordinates);
     return m_board(row, col) == EMPTY;
 }
 
@@ -253,8 +252,8 @@ void Goban::getNeighbors(Group *neighbors, int row, int col)
     
     for (auto neighbor : potentialNeighbors)
     {    
-        int neighborRow = get<0>(neighbor);
-        int neighborCol = get<1>(neighbor);
+        int neighborRow = std::get<0>(neighbor);
+        int neighborCol = std::get<1>(neighbor);
 
         if (m_board(neighborRow, neighborCol) == m_board(row, col))
         {
@@ -270,10 +269,10 @@ void Goban::getNeighbors(Group *neighbors, int row, int col)
 Group getAdjacentSquares(int row, int col, int boardSize)
 {
     Group adjacentSquares = {
-        {max(row - 1, 0), col},
-        {min(row + 1, boardSize - 1), col},
-        {row, max(col - 1, 0)},
-        {row, min(col + 1, boardSize - 1)}
+        {std::max(row - 1, 0), col},
+        {std::min(row + 1, boardSize - 1), col},
+        {row, std::max(col - 1, 0)},
+        {row, std::min(col + 1, boardSize - 1)}
     };
     return adjacentSquares;
 }
@@ -285,6 +284,6 @@ void Goban::checkSelfAtari(int row, int col)
     if (liberties == 0)
     {
         placeStone(EMPTY, row, col);
-        throw logic_error("Invalid Move: Self Atari");
+        throw std::logic_error("Invalid Move: Self Atari");
     }
 }
