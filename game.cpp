@@ -27,7 +27,7 @@ GoGame::GoGame(Goban board, Player black, Player white, std::vector<Goban> board
     this->currentPlayer = black;
 }
 
-void GoGame::play(int row, int col)
+void GoGame::makeMove(int row, int col)
 {
     int stone = BLACK;
     if (currentPlayer == white)
@@ -38,50 +38,45 @@ void GoGame::play(int row, int col)
     goban.placeStone(stone, row, col);
 }
 
-void GoGame::startGame()
+void GoGame::play(tuple<int, int> move)
 {
-    string move;
-    do
+    int row = get<0>(move);
+    int col = get<1>(move); 
+    GoGame::play(row, col);
+
+}
+
+void GoGame::play(int row, int col)
+{
+    try
     {
-        cout << "What's your move: ";
-        getline(cin, move);
+        play(row, col);
+        cout << this->goban.getLiberties({ make_tuple(1,1) });
 
-        try
+        Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
+        
+        bool captured = false;
+        for (auto adjacent : adjacentStones)
         {
-            tuple<int, int> parsedMove = parseMove(move);
-            int row = get<0>(parsedMove);
-            int col = get<1>(parsedMove);
-
-            play(row, col);
-            cout << this->goban.getLiberties({ make_tuple(1,1) });
-
-            Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
-            
-            bool captured = false;
-            for (auto adjacent : adjacentStones)
-            {
-                cout << get<0>(adjacent) << "," << get<1>(adjacent) << endl;
-                captured = captured || checkForCapturedStones(get<0>(adjacent), get<1>(adjacent));
-            }
-
-            if (!captured)
-            {
-                goban.checkSelfAtari(row, col);
-            }
-            koCheck();
+            cout << get<0>(adjacent) << "," << get<1>(adjacent) << endl;
+            captured = captured || checkForCapturedStones(get<0>(adjacent), get<1>(adjacent));
         }
-        catch (const logic_error &error)
+
+        if (!captured)
         {
-            cout << error.what() << endl;
-            continue;
+            goban.checkSelfAtari(row, col);
         }
+        koCheck();
         cout << endl;
         boardHistory.push_back(this->goban);
         switchActivePlayer();
         cout << "Current player:" << currentPlayer.color << endl;
         goban.displayBoard();
-    } while (move != "quit");
-
+    }
+    catch (const logic_error &error)
+    {
+        cout << error.what() << endl;
+    }
 }
 
 void GoGame::switchActivePlayer()

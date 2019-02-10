@@ -15,8 +15,9 @@ public:
     GoGame(Goban board, Player black, Player white);
     GoGame(Goban board, Player black, Player white, std::vector<Goban> boardHistory);
     
+    void makeMove(int row, int col);
     void play(int row, int col);
-    void startGame();
+    void play(tuple<int, int> move);
     
 private:
     void switchActivePlayer();

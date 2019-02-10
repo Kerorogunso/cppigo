@@ -25,8 +25,8 @@ TEST(Board, PlaceStone)
     testGoban.placeStone(BLACK, { 5, 4 });
     EXPECT_EQ(testGoban.board()(5,4), BLACK);
 
-    testGoban.placeStone(WHITE, 5, 4);
-    EXPECT_EQ(testGoban.board()(5,4), WHITE);
+    testGoban.placeStone(WHITE, 4, 4);
+    EXPECT_EQ(testGoban.board()(4,4), WHITE);
     
     EXPECT_THROW(testGoban.placeStone(WHITE, { 10, 5 }), std::logic_error);
     EXPECT_THROW(testGoban.placeStone(BLACK, 5, 10), std::logic_error);
@@ -38,14 +38,12 @@ TEST(Board, BoardAssignment)
     Goban oldBoard(9);
     Goban newBoard(13);
     
-    newBoard.placeStone(BLACK, 11, 4);
-    
     int randomStone;
     for (int i = 0; i < 13; ++i)
     {
         for (int j = 0; j < 13; ++j)
         {
-            randomStone = rand() % 2 + 1;
+            randomStone = (i * j) % 2 + 1;
             newBoard.placeStone(randomStone, i, j);
         }
     }
