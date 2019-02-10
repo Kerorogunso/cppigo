@@ -17,6 +17,11 @@ int main()
     uiOptions.windowWidth = 400;
 
     ui.setupUI(uiOptions);
+    ui.addBoardPositionClickedCallback([&go, &ui](Vector2i position)
+    {
+        go.play(position);
+        ui.updateBoard(go.goban.board());
+    });
 
     while (true)
     {
@@ -25,7 +30,7 @@ int main()
         string move;
         cout << "What's your move:" << endl;
         while (cin >> move) {};
-        tuple<int, int> parsedMove = parseMove(move);
+        Vector2i parsedMove = parseMove(move);
         go.play(parsedMove);
     }
 }

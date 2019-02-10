@@ -1,5 +1,6 @@
 #include "player.h"
 #include "board.h"
+#include "Utilities/VectorT.h"
 
 using namespace std;
 class GoGame
@@ -17,7 +18,7 @@ public:
     
     void makeMove(int row, int col);
     void play(int row, int col);
-    void play(tuple<int, int> move);
+    void play(const Vector2i &move);
     
 private:
     void switchActivePlayer();
@@ -25,4 +26,4 @@ private:
     void koCheck();
 };
 
-tuple<int, int> parseMove(string move);
+Vector2i parseMove(const string &move);

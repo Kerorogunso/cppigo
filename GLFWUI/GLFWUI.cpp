@@ -259,7 +259,7 @@ void GLFWUI::drawBoard()
     {
         for (int x = 0; x < m_boardSize.width; ++x)
         {
-            const stones stone = stones::WHITE;// static_cast<stones>((*m_board)(y, x));
+            const stones stone = static_cast<stones>((*m_board)(y, x));
             if (stone == stones::EMPTY)
             {
                 continue;

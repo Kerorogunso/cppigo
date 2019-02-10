@@ -38,10 +38,10 @@ void GoGame::makeMove(int row, int col)
     goban.placeStone(stone, row, col);
 }
 
-void GoGame::play(tuple<int, int> move)
+void GoGame::play(const Vector2i &move)
 {
-    int row = get<0>(move);
-    int col = get<1>(move); 
+    int row = move.y;
+    int col = move.x;
     GoGame::play(row, col);
 
 }
@@ -50,7 +50,7 @@ void GoGame::play(int row, int col)
 {
     try
     {
-        play(row, col);
+        makeMove(row, col);
         cout << this->goban.getLiberties({ make_tuple(1,1) });
 
         Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
@@ -116,7 +116,7 @@ bool GoGame::checkForCapturedStones(int row, int col)
     return false;
 }
 
-tuple<int, int> parseMove(string move)
+Vector2i parseMove(const string &move)
 {
     stringstream stream(move);
     std::vector<int> coordinates;
@@ -127,7 +127,7 @@ tuple<int, int> parseMove(string move)
             coordinates.push_back(n);
         }
 
-        return make_tuple(coordinates[0], coordinates[1]);
+        return Vector2i{ coordinates[0], coordinates[1] };
     }
     catch(const out_of_range& cor) {
         cout << "Could not parse move into tuple of ints" << endl;
