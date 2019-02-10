@@ -9,5 +9,12 @@ using namespace std;
 int main()
 {
     GoGame go;
-    go.startGame();
+    while (true)
+    {
+        string move;
+        cout << "What's your move:" << endl;
+        cin >> move;
+        tuple<int, int> parsedMove = parseMove(move);
+        go.play(parsedMove);
+    }
 }
