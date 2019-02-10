@@ -4,6 +4,7 @@
 #include "board.h"
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/math/constants/constants.hpp>
+#include "Utilities/VectorT.h"
 #include <future>
 #include <memory>
 #include <thread>
@@ -11,26 +12,6 @@
 struct GLFWwindow;
 
 constexpr double kPi = boost::math::constants::pi<double>();
-
-struct Vector3f
-{
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
-};
-
-struct ColourRGBf
-{
-    float red = 0.f;
-    float green = 0.f;
-    float blue = 0.f;
-};
-
-struct Vector2f
-{
-    float x = 0.f;
-    float y = 0.f;
-};
 
 class GLFWUI_DLL GLFWUI
 {
@@ -43,6 +24,9 @@ public:
         int windowHeight = 300;
 
         float boardBorderFraction = 0.01f;
+        
+        ColourRGBf boardColour{ 219.f / 255.f, 158.f / 255.f, 46.f / 255.f };
+        ColourRGBf gridColour{ 0.f, 0.f, 0.f };
     };
 
     GLFWUI();
@@ -60,8 +44,24 @@ private:
     void handleGlobalMouseEvents();
     void renderLoop();
     void drawBoard();
+    void drawHorizontalGridlines();
+    void drawVerticalGridlines();
     void setupDrawing();
     void drawStone(const Vector2f &centre, float radius, const ColourRGBf &colour);
+    ColourRGBf stoneToColour(stones stone);
+
+    Vector2f screenCoordsToBoard(const Vector2f &screenCoords);
+    Vector2f boardCoordsToScreen(const Vector2f &boardCoords);
+
+    Vector2f m_boardStart;
+    float m_boardSide = 0.f;
+    float m_squareSide = 0.f;
+
+    struct BoardSize
+    {
+        int width = 1;
+        int height = 1;
+    } m_boardSize;
 
     GLFWwindow* m_window = nullptr;
     std::unique_ptr<boost::numeric::ublas::matrix<int>> m_board = nullptr;
