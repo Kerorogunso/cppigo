@@ -5,8 +5,8 @@
 TEST(GoGame, SelfAtari)
 {
     Goban testBoard(9);
-    Player black("Player 1", "black");
-    Player white("Player 2", "white");
+    Player black("Player 1", kBlack);
+    Player white("Player 2", kWhite);
 
     testBoard.placeStone(BLACK, 1, 0);
     testBoard.placeStone(BLACK, 0, 1);
@@ -25,8 +25,8 @@ TEST(GoGame, SelfAtari)
 TEST(GoGame, KoRule)
 {
     Goban testBoard(9);
-    Player black("Player 1", "black");
-    Player white("Player 2", "white");
+    Player black("Player 1", kBlack);
+    Player white("Player 2", kWhite);
 
     testBoard.placeStone(BLACK, 1, 0);
     testBoard.placeStone(BLACK, 0, 1);
@@ -48,8 +48,8 @@ TEST(GoGame, KoRule)
 TEST(GoGame, CaptureCentre)
 {
     Goban testBoard(9);
-    Player black("Player 1", "black");
-    Player white("Player 2", "white");
+    Player black("Player 1", kBlack);
+    Player white("Player 2", kWhite);
 
     testBoard.placeStone(BLACK, 1, 0);
     testBoard.placeStone(BLACK, 0, 1);
@@ -67,8 +67,8 @@ TEST(GoGame, CaptureCentre)
 TEST(GoGame, CaptureCorner)
 {
     Goban testBoard(13);
-    Player black("Player 1", "black");
-    Player white("Player 2", "white");
+    Player black("Player 1", kBlack);
+    Player white("Player 2", kWhite);
 
     testBoard.placeStone(BLACK, 11, 12);
     testBoard.placeStone(WHITE, 12, 12);
@@ -80,8 +80,8 @@ TEST(GoGame, CaptureCorner)
 TEST(GoGame, CaptureSide)
 {
     Goban testBoard(19);
-    Player black("Player 1", "black");
-    Player white("Player 2", "white");
+    Player black("Player 1", kBlack);
+    Player white("Player 2", kWhite);
     
     testBoard.placeStone(BLACK, 5, 18);
     testBoard.placeStone(BLACK, 6, 18);
