@@ -13,13 +13,16 @@ TEST(GoGame, SelfAtari)
     testBoard.placeStone(BLACK, 1, 2);
     testBoard.placeStone(BLACK, 2, 1);
     
-    testBoard.placeStone(WHITE, 1, 3);
-    testBoard.placeStone(WHITE, 2, 2);
-    testBoard.placeStone(WHITE, 0, 2);
-
     GoGame testGame(testBoard, black, white);
-    testGame.play(1, 1);
- 
+    testGame.currentPlayer = testGame.white;
+    GobanError selfAtariCheck = testGame.play(1, 1);
+    EXPECT_EQ(selfAtariCheck, GobanError::kSelfAtari);
+
+    testBoard.placeStone(WHITE, 7, 8);
+    testBoard.placeStone(WHITE, 8, 7);
+    GoGame testGame2(testBoard, black, white);
+    GobanError selfAtariCheck2 = testGame2.play(8, 8);
+    EXPECT_EQ(selfAtariCheck2, GobanError::kSelfAtari);
 }
 
 TEST(GoGame, KoRule)

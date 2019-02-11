@@ -118,6 +118,11 @@ matrix<int> *Goban::board_mutable()
 
 Group Goban::returnNeighbors(int row, int col)
 {
+    if (board()(row, col) == EMPTY)
+    {
+        return { {row, col} };
+    }
+
     Group neighbors = {};
     neighbors.push_back({ row, col });
     getNeighbors(&neighbors, row, col);
@@ -280,14 +285,3 @@ Group getAdjacentSquares(int row, int col, int boardSize)
     return adjacentSquares;
 }
 
-GobanError Goban::checkSelfAtari(int row, int col)
-{
-    Group stoneGroup = returnNeighbors(row, col);
-    int liberties = getLiberties(stoneGroup);
-    if (liberties == 0)
-    {
-        placeStone(EMPTY, row, col);
-        return GobanError::kSelfAtari;
-    }
-    return GobanError::kSuccess;
-}

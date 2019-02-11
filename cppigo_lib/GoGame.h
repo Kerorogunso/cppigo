@@ -24,6 +24,7 @@ private:
     void switchActivePlayer();
     bool checkForCapturedStones(int row, int col);
     GobanError koCheck();
+    GobanError checkSelfAtari(int row, int col);
 };
 
 Vector2i CPPIGO_DLL parseMove(const std::string &move);

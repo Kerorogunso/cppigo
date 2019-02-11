@@ -37,7 +37,6 @@ public:
     GobanError placeStone(int stone, std::tuple<int, int> index);
     int getBoardSize();
     void getNeighbors(Group *neighbors, int row, int col);
-    GobanError checkSelfAtari(int row, int col);
     Group returnNeighbors(int row, int col);
     void displayBoard();
     int getLiberties(Group neighbors);

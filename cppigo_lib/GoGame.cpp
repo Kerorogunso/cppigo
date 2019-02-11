@@ -32,7 +32,7 @@ GoGame::GoGame(Goban board, Player black, Player white, std::vector<Goban> board
 GobanError GoGame::makeMove(int row, int col)
 {
     int stone = BLACK;
-    if (currentPlayer == white)
+    if (currentPlayer.color == kWhite)
     {
         stone = WHITE;
     }
@@ -58,19 +58,15 @@ GobanError GoGame::play(int row, int col)
 
     Group adjacentStones = getAdjacentSquares(row, col, goban.getBoardSize());
 
-    bool captured = false;
     for (auto adjacent : adjacentStones)
     {
-        captured = captured || checkForCapturedStones(std::get<0>(adjacent), std::get<1>(adjacent));
+        checkForCapturedStones(std::get<0>(adjacent), std::get<1>(adjacent));
     }
-
-    if (!captured)
+    
+    GobanError selfAtariCheck = checkSelfAtari(row, col);
+    if (selfAtariCheck != GobanError::kSuccess)
     {
-        GobanError selfAtariCheck = goban.checkSelfAtari(row, col);
-        if (selfAtariCheck != GobanError::kSuccess)
-        {
-            return selfAtariCheck;
-        }
+        return selfAtariCheck;
     }
     
     GobanError koRuleCheck = koCheck();
@@ -80,8 +76,8 @@ GobanError GoGame::play(int row, int col)
     }
     boardHistory.push_back(this->goban);
     switchActivePlayer();
-    std::cout << "Current player:" << currentPlayer.name << std::endl;
     goban.displayBoard();
+    return GobanError::kSuccess;
 }
 
 void GoGame::switchActivePlayer()
@@ -137,6 +133,19 @@ Vector2i parseMove(const std::string &move)
     catch (const std::out_of_range& cor) {
         std::cout << "Could not parse move into tuple of ints" << std::endl;
     }
+}
+
+GobanError GoGame::checkSelfAtari(int row, int col)
+{
+    Group stoneGroup = goban.returnNeighbors(row, col);
+    int liberties = goban.getLiberties(stoneGroup);
+
+    if (liberties == 0)
+    {
+        goban = this->boardHistory[boardHistory.size() - 1];
+        return GobanError::kSelfAtari;
+    }
+    return GobanError::kSuccess;
 }
 
 GobanError GoGame::koCheck()
