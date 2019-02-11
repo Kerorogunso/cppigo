@@ -192,8 +192,8 @@ Vector2d GLFWUI::screenCoordsToBoard(const Vector2d &screenCoords)
     }
 
     Vector2d boardCoords;
-    boardCoords.x = (screenCoords.x - m_boardStart.x) * (m_boardSize.width / m_boardSide);
-    boardCoords.y = (screenCoords.y - m_boardStart.y) * (m_boardSize.height / m_boardSide);
+    boardCoords.x = (screenCoords.x - m_boardStart.x) * (m_boardSize.width) / m_boardSide;
+    boardCoords.y = (screenCoords.y - m_boardStart.y) * (m_boardSize.height) / m_boardSide;
     return boardCoords;
 }
 
@@ -213,10 +213,11 @@ Vector2d GLFWUI::boardCoordsToScreen(const Vector2d &boardCoords)
 void GLFWUI::drawHorizontalGridlines()
 {
     glLineWidth(1.f);
-    for (int y = 0; y <= m_boardSize.height; ++y)
+    for (int y = 0; y <= m_boardSize.height; y++)
     {
         glColor3f(m_options.gridColour.red, m_options.gridColour.green, m_options.gridColour.blue);
         glBegin(GL_LINES);
+        
         glVertex2d(m_boardStart.x, m_boardStart.y + m_squareSide * y);
         glVertex2d(m_boardStart.x + m_boardSide, m_boardStart.y + m_squareSide * y);
         glEnd();
@@ -225,7 +226,7 @@ void GLFWUI::drawHorizontalGridlines()
 
 void GLFWUI::drawVerticalGridlines()
 {
-    for (int x = 0; x <= m_boardSize.width; ++x)
+    for (int x = 0; x <= m_boardSize.width; x++)
     {
         glColor3f(m_options.gridColour.red, m_options.gridColour.green, m_options.gridColour.blue);
         glBegin(GL_LINES);
@@ -237,8 +238,8 @@ void GLFWUI::drawVerticalGridlines()
 
 void GLFWUI::updateForNewScreenSize()
 {
-    m_boardSize.height = static_cast<int>(m_gameState.board->size1());
-    m_boardSize.width = static_cast<int>(m_gameState.board->size2());
+    m_boardSize.height = static_cast<int>(m_gameState.board->size1()) - 1;
+    m_boardSize.width = static_cast<int>(m_gameState.board->size2()) - 1;
 
     int windowWidth = 0;
     int windowHeight = 0;
@@ -322,8 +323,8 @@ void GLFWUI::drawStoneAtNearestGridPointToMouse()
 
     const int boardX = boardPositionInteger.x;
     const int boardY = boardPositionInteger.y;
-    if (boardX >= 0 && boardX < m_boardSize.width &&
-        boardY >= 0 && boardY < m_boardSize.height)
+    if (boardX >= 0 && boardX < m_boardSize.width + 1&&
+        boardY >= 0 && boardY < m_boardSize.height + 1)
     {
         const double radius = (m_boardSide / m_boardSize.width) * m_options.stoneDiameterAsFractionOfGridCell * 0.5f;
         const Vector2d posiion = boardCoordsToScreen({ static_cast<double>(boardX), static_cast<double>(boardY) });
