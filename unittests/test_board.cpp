@@ -22,7 +22,7 @@ TEST(Board, BoardSize)
 TEST(Board, PlaceStone)
 {
     Goban testGoban(9);
-    GobanError testSuccess = testGoban.placeStone(BLACK, { 5, 4 });
+    GobanError testSuccess = testGoban.placeStone(BLACK, {5, 4});
     EXPECT_EQ(testGoban.board()(5,4), BLACK);
     EXPECT_EQ(testSuccess, GobanError::kSuccess);
 
@@ -68,4 +68,25 @@ TEST(Board, BoardAssignment)
         }
     }
 
+}
+
+TEST(Board, Neighbors)
+{
+    Goban testBoard;
+    Group testGroup = { {0, 0}, {1, 0}, {1, 1}, 
+        {1, 2}, {2, 2}, {3, 2}, 
+        {3, 3}, {4, 3}, {5, 3}
+    };
+    for (auto coords: testGroup)
+    {
+        testBoard.placeStone(BLACK, coords);
+    }
+    Group neighbors = testBoard.returnNeighbors(1, 1);
+    
+    // Check each stone is in the group
+    for (auto coords : testGroup)
+    {
+        auto it = std::find(neighbors.begin(), neighbors.end(), coords);
+        EXPECT_NE(it, neighbors.end());
+    }
 }
